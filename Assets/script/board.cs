@@ -114,12 +114,28 @@ public class board : MonoBehaviour
                 for (int j = -1; j < 2; j++)
                 {
                     //周囲の座標を取得
-                    int chenge_x = x + i;
-                    int chenge_y = y + j;
-                    //x or yが7の時8となりエラーで検索できなくなるためそれを回避するための処理
-                    if (nx == 8 || ny == 8)
+                    int chenge_x = x - i;
+                    int chenge_y = y - j;
+                    int cnt = 1;
+                    bool revers_t = false;
+
+                    if(komaArray[chenge_x,chenge_y].GetComponent<komaScript>().type == KOMA_TYPE.White)
                     {
-                        continue;
+                        //ひっくり返せるか確認処理
+                        while (komaArray[x + (i * cnt),y + (j * cnt)].GetComponent<komaScript>().type == KOMA_TYPE.Black)
+                        {
+                            revers_t = true;
+                            cnt += 1;
+                        }
+                        if (revers_t)
+                        {
+                            while(cnt == 0)
+                            {
+                                komaArray[x + (i * cnt), y + (j * cnt)].GetComponent<komaScript>().rotation();
+                                komaArray[x + (i * cnt), y + (j * cnt)].GetComponent<komaScript>().type = KOMA_TYPE.Black;
+                                cnt--;
+                            }
+                        }
                     }
                 }
             }
@@ -129,7 +145,5 @@ public class board : MonoBehaviour
         {
 
         }
-
-
     }
 }
