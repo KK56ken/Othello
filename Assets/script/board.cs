@@ -28,6 +28,8 @@ public class board : MonoBehaviour
         m_texture.Apply();
         GetComponent<Renderer>().material.mainTexture = m_texture;
 
+        System_manager system = GameObject.Find("system").GetComponent<System_manager>();
+
         float width = this.transform.localScale.x;
         float height = this.transform.localScale.z;
         float thisX = this.transform.localPosition.x - (width / 2);//boardの左上X
@@ -43,7 +45,6 @@ public class board : MonoBehaviour
                 float vecX = thisX + space_obj * i + (objWidth / 2);
                 float vecZ = thisZ + space_obj * j + (objHeight / 2);
                 komaArray[i, j] = Instantiate(obj, new Vector3(vecX, obj.transform.localPosition.y, vecZ), Quaternion.identity);
-                //||(i == 5 && j == 3) || (i == 4 && j == 2)|| (i == 3 && j == 5) || (i == 2 && j == 4) || (i == 5 && j == 2 ) || (i == 6 && j == 1) ||(i == 2 && j ==5) || (i == 1 && j == 6)
                 if ((i == 3 && j == 4) || (i == 4 && j == 3))
                 {
                     //コマを白にする
@@ -66,9 +67,19 @@ public class board : MonoBehaviour
         {
             for (int j = 0; j < 8; j++)
             {
-                //&& !(i == 5 && j == 3) && !(i == 4 && j == 2) && !(i == 3 && j == 5) && !(i == 2 && j == 4) && !(i == 5 && j == 2) && !(i == 6 && j == 1) && !(i == 2 && j == 5) && !(i == 1 && j == 6)
                 if (!(i == 3 && j == 4) && !(i == 4 && j == 3) && !(i == 3 && j == 3) && !(i == 4 && j == 4))
                 {
+                    if (system.get_turn() == TURN.play_first)
+                    {
+                        if (get_koma_type(i, j) == KOMA_TYPE.White)
+                        {
+
+                        }
+                        else if (get_koma_type(i, j) == KOMA_TYPE.Black)
+                        {
+
+                        }
+                    }
                     GameObject dummy = (GameObject)Resources.Load(@"dummy");
                     float dummyWidth = dummy.transform.localScale.x;
                     float dummyHeight = dummy.transform.localScale.z;
@@ -101,6 +112,10 @@ public class board : MonoBehaviour
         float vecZ = thisZ + space_obj * y + (objHeight / 2);
         komaArray[x, y] = Instantiate(obj, new Vector3(vecX, obj.transform.localPosition.y, vecZ), Quaternion.identity);
         revers(x, y);
+    }
+    public void check_revers(int x, int y)
+    {
+
     }
     public void revers(int x, int y)
     {
