@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum KOMA_TYPE {Black,White }
+public enum KOMA_TYPE {Black,White,None}
 public class komaScript : MonoBehaviour
 {
     public KOMA_TYPE type;
