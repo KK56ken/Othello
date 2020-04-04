@@ -16,10 +16,13 @@ public class ButtonController : MonoBehaviour
     {
         
     }
-    public void onClickStartButton()
+    public void onClickOffButton()
     {
-
-        Invoke("ChangeScene", 1.5f);
+        Invoke("ChangeScene", 1.0f);
+    }
+    public void onClickEndButton()
+    {
+        UnityEngine.Application.Quit();
     }
     void ChangeScene()
     {
