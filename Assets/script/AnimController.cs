@@ -4,36 +4,34 @@ using UnityEngine;
 
 public class AnimController : MonoBehaviour
 {
-    Animator anim;
     float defaultY;
     // Start is called before the first frame update
     void Start()
     {
-        anim = GetComponent<Animator>();
         defaultY = transform.position.y;
+        Debug.Log("AnimControllerのコンストラクタ");
     }
 
     // Update is called once per frame
     void Update()
     {
     }
-    public void koma_rotation()
+    public void koma_rotation(bool forced)
     {
-        if (defaultY == transform.position.y)
+        if (forced || defaultY == transform.position.y)
         {
-            GameObject childObj = gameObject.transform.GetChild(0).gameObject;
-            KOMA_TYPE type = childObj.GetComponent<komaScript>().type;
+            KOMA_TYPE type = GetComponent<komaScript>().type;
             if (type == KOMA_TYPE.Black)
             {
                 Debug.Log("BlackToWhite");
-                anim.Play("BlackToWhite", 0);
-                childObj.GetComponent<komaScript>().type = KOMA_TYPE.White;
+                GetComponent<Animator>().Play("BlackToWhite", 0);
+                GetComponent<komaScript>().type = KOMA_TYPE.White;
             }
             else
             {
                 Debug.Log("WhiteToBlack");
-                anim.Play("WhiteToBlack", 0);
-                childObj.GetComponent<komaScript>().type = KOMA_TYPE.Black;
+                GetComponent<Animator>().Play("WhiteToBlack", 0);
+                GetComponent<komaScript>().type = KOMA_TYPE.Black;
             }
         }
     }
