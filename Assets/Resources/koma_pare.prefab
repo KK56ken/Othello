@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 458630477606857969}
   - component: {fileID: 458630477606857974}
   - component: {fileID: 458630477606857968}
+  - component: {fileID: 8933575037709733}
   m_Layer: 0
-  m_Name: 'GameObject '
+  m_Name: koma_pare
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -64,6 +65,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72c0e472a9a87d94eb6a4dfff456a47d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &8933575037709733
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 458630477606857975}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d51e8555ca472034ebe290c0cce5e523, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  type: 0
+  x: 0
+  y: 0
+  anim: {fileID: 458630477606857968}
 --- !u!1001 &4049649859924553177
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -89,17 +106,17 @@ PrefabInstance:
     - target: {fileID: 4498637437034084490, guid: a30466d1b7ee9e243b561961e3908053,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4498637437034084490, guid: a30466d1b7ee9e243b561961e3908053,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4498637437034084490, guid: a30466d1b7ee9e243b561961e3908053,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4498637437034084490, guid: a30466d1b7ee9e243b561961e3908053,
         type: 3}
@@ -131,10 +148,20 @@ PrefabInstance:
       propertyPath: m_Name
       value: koma
       objectReference: {fileID: 0}
+    - target: {fileID: 4498637437034084493, guid: a30466d1b7ee9e243b561961e3908053,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4498637437034084495, guid: a30466d1b7ee9e243b561961e3908053,
         type: 3}
       propertyPath: m_Material
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 4498637437034084495, guid: a30466d1b7ee9e243b561961e3908053,
+        type: 3}
+      propertyPath: m_Direction
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: a30466d1b7ee9e243b561961e3908053, type: 3}

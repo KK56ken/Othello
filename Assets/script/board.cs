@@ -28,6 +28,10 @@ public class board : MonoBehaviour
         m_texture.Apply();
         GetComponent<Renderer>().material.mainTexture = m_texture;
 
+        Invoke("setStartPosition", 1.0F);
+    }
+    void setStartPosition()
+    {
         float width = this.transform.localScale.x;
         float height = this.transform.localScale.z;
         float thisX = this.transform.localPosition.x - (width / 2);//boardの左上X
@@ -37,7 +41,7 @@ public class board : MonoBehaviour
         {
             for (int j = 3; j <= 4; j++)
             {
-                GameObject obj = (GameObject)Resources.Load(@"koma");
+                GameObject obj = (GameObject)Resources.Load(@"koma_pare");
                 float objWidth = obj.transform.localScale.x;
                 float objHeight = obj.transform.localScale.z;
                 float vecX = thisX + space_obj * i + (objWidth / 2);
@@ -47,15 +51,16 @@ public class board : MonoBehaviour
                 if ((i == 3 && j == 4) || (i == 4 && j == 3))
                 {
                     //コマを白にする
-                    komaArray[i, j].GetComponent<komaScript>().rotation();
-                    komaArray[i, j].GetComponent<komaScript>().type = KOMA_TYPE.White;
+                    Debug.Log("白のコマを配置");
+                    komaArray[i, j].GetComponent<komaScript>().type = KOMA_TYPE.Black;
                     komaArray[i, j].GetComponent<komaScript>().x = i;
-                    komaArray[i, j].GetComponent<komaScript>().y = j;
-                 
+                    komaArray[i, j].GetComponent<komaScript>().y = j;   
+                    komaArray[i, j].GetComponent<komaScript>().rotation(true);
                 }
                 else
                 {
                     //コマを黒にする
+                    Debug.Log("黒のコマを配置");
                     komaArray[i, j].GetComponent<komaScript>().type = KOMA_TYPE.Black;
                     komaArray[i, j].GetComponent<komaScript>().x = i;
                     komaArray[i, j].GetComponent<komaScript>().y = j;
@@ -69,24 +74,13 @@ public class board : MonoBehaviour
                 //&& !(i == 5 && j == 3) && !(i == 4 && j == 2) && !(i == 3 && j == 5) && !(i == 2 && j == 4) && !(i == 5 && j == 2) && !(i == 6 && j == 1) && !(i == 2 && j == 5) && !(i == 1 && j == 6)
                 if (!(i == 3 && j == 4) && !(i == 4 && j == 3) && !(i == 3 && j == 3) && !(i == 4 && j == 4))
                 {
-                    GameObject dummy = (GameObject)Resources.Load(@"dummy");
-                    float dummyWidth = dummy.transform.localScale.x;
-                    float dummyHeight = dummy.transform.localScale.z;
-                    float vecX = thisX + space_obj * i + (dummyWidth / 2);
-                    float vecZ = thisZ + space_obj * j + (dummyHeight / 2);
-                    dummy.GetComponent<DummyScript>().x = i;
-                    dummy.GetComponent<DummyScript>().y = j;
-
-                    Instantiate(dummy, new Vector3(vecX, dummy.transform.localPosition.y, vecZ), Quaternion.identity);
+                    //デバッグ用で毎回黒を置く
+                    setDummy(i, j, KOMA_TYPE.White);
                 }
             }
         }
     }
-    // Update is called once per frame
-    void Update()
-    {
-    }
-    public void SetKoma(int x, int y)
+    public void setDummy(int x, int y, KOMA_TYPE type)
     {
         float width = this.transform.localScale.x;
         float height = this.transform.localScale.z;
@@ -94,21 +88,46 @@ public class board : MonoBehaviour
         float thisZ = this.transform.localPosition.z - (height / 2);//boardの左上のZ
         float space_obj = width / 8;
 
-        GameObject obj = (GameObject)Resources.Load(@"koma");
+        GameObject dummy = (GameObject)Resources.Load(@"dummy");
+        float dummyWidth = dummy.transform.localScale.x;
+        float dummyHeight = dummy.transform.localScale.z;
+        float vecX = thisX + space_obj * x + (dummyWidth / 2);
+        float vecZ = thisZ + space_obj * y + (dummyHeight / 2);
+        dummy.GetComponent<DummyScript>().x = x;
+        dummy.GetComponent<DummyScript>().y = y;
+
+        Instantiate(dummy, new Vector3(vecX, dummy.transform.localPosition.y, vecZ), Quaternion.identity);
+    }
+    // Update is called once per frame
+    void Update()
+    {
+    }
+    public void SetKoma(int x, int y, KOMA_TYPE type)
+    {
+        float width = this.transform.localScale.x;
+        float height = this.transform.localScale.z;
+        float thisX = this.transform.localPosition.x - (width / 2);//boardの左上X
+        float thisZ = this.transform.localPosition.z - (height / 2);//boardの左上のZ
+        float space_obj = width / 8;
+
+        GameObject obj = (GameObject)Resources.Load(@"koma_pare");
         float objWidth = obj.transform.localScale.x;
         float objHeight = obj.transform.localScale.z;
         float vecX = thisX + space_obj * x + (objWidth / 2);
         float vecZ = thisZ + space_obj * y + (objHeight / 2);
         komaArray[x, y] = Instantiate(obj, new Vector3(vecX, obj.transform.localPosition.y, vecZ), Quaternion.identity);
+
+        if (type == KOMA_TYPE.White)
+            komaArray[x, y].transform.GetChild(0).Rotate(0, 0, 180);
         revers(x, y);
     }
     public void revers(int x, int y)
     {
-        Debug.Log("<color=blue>置いた場所 x:" + x + " y:" + y+"</color>");
+        Debug.Log("<color=blue>置いた場所 x:" + x + " y:" + y + " 色:" + komaArray[x, y].GetComponent<komaScript>().type + "</color>");
         //白をひっくり返す処理
         if (komaArray[x, y].GetComponent<komaScript>().type == KOMA_TYPE.Black)
         {
-            
+
             for (int i = -1; i < 2; i++)
             {
                 for (int j = -1; j < 2; j++)
@@ -119,23 +138,23 @@ public class board : MonoBehaviour
                     int cnt = 1;
                     bool revers_t = false;
 
-                    if (get_koma_type(chenge_x,chenge_y) == KOMA_TYPE.White)
+                    if (get_koma_type(chenge_x, chenge_y) == KOMA_TYPE.White)
                     {
                         Debug.Log("i = " + i + " j = " + j);
                         Debug.Log("chenge_x = " + chenge_x + " chenge_y = " + chenge_y);
-              
+
                         //ひっくり返せるか確認処理
-                        while (komaArray[chenge_x + (i * cnt),chenge_y + (j * cnt)].GetComponent<komaScript>().type == KOMA_TYPE.White)
-                        { 
+                        while (komaArray[chenge_x + (i * cnt), chenge_y + (j * cnt)].GetComponent<komaScript>().type == KOMA_TYPE.White)
+                        {
                             cnt += 1;
                         }
-                        while(cnt != 0)
+                        while (cnt != 0)
                         {
-                            Debug.Log((x + (i * cnt)) +"," + (y + (j * cnt)));
-                            komaArray[x + (i * cnt), y + (j * cnt)].GetComponent<komaScript>().rotation();
+                            Debug.Log((x + (i * cnt)) + "," + (y + (j * cnt)));
+                            komaArray[x + (i * cnt), y + (j * cnt)].GetComponent<komaScript>().rotation(false);
                             komaArray[x + (i * cnt), y + (j * cnt)].GetComponent<komaScript>().type = KOMA_TYPE.Black;
                             cnt--;
-                        } 
+                        }
                     }
                 }
             }
@@ -166,7 +185,7 @@ public class board : MonoBehaviour
                         while (cnt != 0)
                         {
                             Debug.Log((x + (i * cnt)) + "," + (y + (j * cnt)));
-                            komaArray[x + (i * cnt), y + (j * cnt)].GetComponent<komaScript>().rotation();
+                            komaArray[x + (i * cnt), y + (j * cnt)].GetComponent<komaScript>().rotation(false);
                             komaArray[x + (i * cnt), y + (j * cnt)].GetComponent<komaScript>().type = KOMA_TYPE.White;
                             cnt--;
                         }
@@ -176,9 +195,10 @@ public class board : MonoBehaviour
 
         }
     }
-    public KOMA_TYPE get_koma_type(int x ,int y)
+
+    public KOMA_TYPE get_koma_type(int x, int y)
     {
-        if (komaArray[x,y] == null)
+        if (komaArray[x, y] == null)
         {
             return KOMA_TYPE.None;
         }

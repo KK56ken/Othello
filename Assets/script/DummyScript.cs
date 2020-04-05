@@ -6,6 +6,7 @@ public class DummyScript : MonoBehaviour
 {
     public int x;
     public int y;
+    public KOMA_TYPE koma_type;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,7 +22,7 @@ public class DummyScript : MonoBehaviour
         board board = GameObject.Find("Board").GetComponent<board>();
         try
         {
-            board.SetKoma(x, y);
+            board.SetKoma(x, y,koma_type);
         }
         catch { }
         Destroy(gameObject);
