@@ -68,38 +68,7 @@ public class board : MonoBehaviour
                 }
             }
         }
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                if (!(i == 3 && j == 4) && !(i == 4 && j == 3) && !(i == 3 && j == 3) && !(i == 4 && j == 4))
-                {
-                    //デバッグ用で毎回黒を置く
-                    setDummy(i, j, KOMA_TYPE.White);
-
-                    if (system.get_turn() == TURN.play_first)
-                    {
-                        if (get_koma_type(i, j) == KOMA_TYPE.White)
-                        {
-
-                        }
-                        else if (get_koma_type(i, j) == KOMA_TYPE.Black)
-                        {
-
-                        }
-                    }
-                    GameObject dummy = (GameObject)Resources.Load(@"dummy");
-                    float dummyWidth = dummy.transform.localScale.x;
-                    float dummyHeight = dummy.transform.localScale.z;
-                    float vecX = thisX + space_obj * i + (dummyWidth / 2);
-                    float vecZ = thisZ + space_obj * j + (dummyHeight / 2);
-                    dummy.GetComponent<DummyScript>().x = i;
-                    dummy.GetComponent<DummyScript>().y = j;
-
-                    Instantiate(dummy, new Vector3(vecX, dummy.transform.localPosition.y, vecZ), Quaternion.identity);
-                }
-            }
-        }
+        can_set(thisX, thisZ, space_obj);
     }
     public void setDummy(int x, int y, KOMA_TYPE type)
     {
@@ -122,6 +91,105 @@ public class board : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+    }
+    public void can_set(float thisX, float thisZ, float space_obj)
+    {
+        System_manager system = GameObject.Find("system").GetComponent<System_manager>();
+
+        int cnt = 0;
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (!(i == 3 && j == 4) && !(i == 4 && j == 3) && !(i == 3 && j == 3) && !(i == 4 && j == 4))
+                {
+                    for (int k = -1; k < 2; k++)
+                    {
+                        for (int l = -1; l < 2; l++)
+                        {
+                            if (system.get_turn() == TURN.play_first)
+                            {
+
+                                cnt = 1;
+
+                                if (get_koma_type((i + k), (j + l)) == KOMA_TYPE.White)
+                                {
+                                    while (cnt != 8)
+                                    {
+                                        if (get_koma_type(i + (k * cnt), j + (l * cnt)) == KOMA_TYPE.Black)
+                                        {
+                                            break;
+                                        }
+                                        cnt += 1;
+                                    }
+                                    if (cnt == 8)
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+
+                                        //Debug.Log("i = " + i + " , " + " j = " + j);
+                                        //Debug.Log("k = " + k + " , " + " l = " + l);
+
+                                        //Debug.Log("i + k = " + (i + k) + " , " + " j + l = " + (j + l));
+                                        //Debug.Log(get_koma_type(i + k, j + l));
+                                        //Debug.Log(cnt);
+
+                                        //Debug.Log(i + (k * cnt));
+                                        //Debug.Log(j + (l * cnt));
+                                        GameObject dummy = (GameObject)Resources.Load(@"dummy");
+                                        float dummyWidth = dummy.transform.localScale.x;
+                                        float dummyHeight = dummy.transform.localScale.z;
+                                        float vecX = thisX + space_obj * i + (dummyWidth / 2);
+                                        float vecZ = thisZ + space_obj * j + (dummyHeight / 2);
+                                        dummy.GetComponent<DummyScript>().x = i;
+                                        dummy.GetComponent<DummyScript>().y = j;
+
+                                        Instantiate(dummy, new Vector3(vecX, dummy.transform.localPosition.y, vecZ), Quaternion.identity);
+
+
+                                    }
+                                }
+                            }
+                            else if (system.get_turn() == TURN.draw_first)
+                            {
+                                cnt = 0;
+                                if (get_koma_type(i + k, j + l) == KOMA_TYPE.Black)
+                                {
+                                    while (cnt != 8)
+                                    {
+
+                                        if (get_koma_type(i + (k * cnt), j + (l * cnt)) == KOMA_TYPE.White)
+                                        {
+                                            break;
+                                        }
+                                        cnt += 1;
+                                    }
+                                    if (cnt == 8)
+                                    {
+                                        continue;
+                                    }
+                                    else
+                                    {
+                                        GameObject dummy = (GameObject)Resources.Load(@"dummy");
+                                        float dummyWidth = dummy.transform.localScale.x;
+                                        float dummyHeight = dummy.transform.localScale.z;
+                                        float vecX = thisX + space_obj * (i + (k * cnt)) + (dummyWidth / 2);
+                                        float vecZ = thisZ + space_obj * (j + (l * cnt)) + (dummyHeight / 2);
+                                        dummy.GetComponent<DummyScript>().x = i;
+                                        dummy.GetComponent<DummyScript>().y = j;
+
+                                        Instantiate(dummy, new Vector3(vecX, dummy.transform.localPosition.y, vecZ), Quaternion.identity);
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
     public void SetKoma(int x, int y, KOMA_TYPE type)
     {
@@ -223,7 +291,11 @@ public class board : MonoBehaviour
 
     public KOMA_TYPE get_koma_type(int x, int y)
     {
-        if (komaArray[x, y] == null)
+        if (x < 0 || y < 0 || x >= 8 || y >= 8)
+        {
+            return KOMA_TYPE.None;
+        }
+        else if (komaArray[x, y] == null)
         {
             return KOMA_TYPE.None;
         }
