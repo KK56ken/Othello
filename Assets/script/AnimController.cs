@@ -16,24 +16,24 @@ public class AnimController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+    }
+    public void koma_rotation()
+    {
+        if (defaultY == transform.position.y)
         {
-            if (defaultY == transform.position.y)
+            GameObject childObj = gameObject.transform.GetChild(0).gameObject;
+            KOMA_TYPE type = childObj.GetComponent<komaScript>().type;
+            if (type == KOMA_TYPE.Black)
             {
-                GameObject childObj = gameObject.transform.GetChild(0).gameObject;
-                KOMA_TYPE type = childObj.GetComponent<komaScript>().type;
-                if (type == KOMA_TYPE.Black)
-                {
-                    Debug.Log("BlackToWhite");
-                    anim.Play("BlackToWhite", 0);
-                    childObj.GetComponent<komaScript>().type = KOMA_TYPE.White;
-                }
-                else
-                {
-                    Debug.Log("WhiteToBlack");
-                    anim.Play("WhiteToBlack", 0);
-                    childObj.GetComponent<komaScript>().type = KOMA_TYPE.Black;
-                }
+                Debug.Log("BlackToWhite");
+                anim.Play("BlackToWhite", 0);
+                childObj.GetComponent<komaScript>().type = KOMA_TYPE.White;
+            }
+            else
+            {
+                Debug.Log("WhiteToBlack");
+                anim.Play("WhiteToBlack", 0);
+                childObj.GetComponent<komaScript>().type = KOMA_TYPE.Black;
             }
         }
     }
