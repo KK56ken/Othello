@@ -8,6 +8,9 @@ public class komaScript : MonoBehaviour
     public KOMA_TYPE type;
     public int x;
     public int y;
+    public AnimController anim;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -27,10 +30,12 @@ public class komaScript : MonoBehaviour
         }
         m_texture.Apply();
         GetComponent<Renderer>().material.mainTexture = m_texture;
+
+        anim = transform.parent.gameObject.GetComponent<AnimController>();
     }
     public void rotation()
     {
-        this.transform.Rotate(0,0,180);
+        anim.koma_rotation();
     }
     // Update is called once per frame
     void Update()
