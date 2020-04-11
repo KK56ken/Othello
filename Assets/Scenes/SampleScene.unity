@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.4465782, g: 0.49641252, b: 0.5748167, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -133,12 +133,12 @@ GameObject:
   - component: {fileID: 20586137}
   - component: {fileID: 20586136}
   m_Layer: 5
-  m_Name: Text
+  m_Name: txt_you
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &20586135
 RectTransform:
   m_ObjectHideFlags: 0
@@ -216,7 +216,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &49716320
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -457,12 +457,12 @@ GameObject:
   - component: {fileID: 84578048}
   - component: {fileID: 84578047}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: ui_turn
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &84578047
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -630,12 +630,12 @@ GameObject:
   - component: {fileID: 210620267}
   - component: {fileID: 210620266}
   m_Layer: 5
-  m_Name: Text
+  m_Name: txt_enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &210620265
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1543,7 +1543,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
 --- !u!1 &926999408
 GameObject:
@@ -1726,7 +1726,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 90, y: -90, z: 0}
 --- !u!114 &963194229
 MonoBehaviour:
@@ -2031,7 +2031,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1391780068
 GameObject:
@@ -2448,7 +2448,7 @@ RectTransform:
   m_LocalScale: {x: 1.1324999, y: 1.1324999, z: 1.1324999}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
@@ -2498,6 +2498,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 890ad64237c90f44784b31afcab7a768, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  b: {fileID: 1563556974}
+  ui_turn: {fileID: 84578046}
 --- !u!1 &1563556973
 GameObject:
   m_ObjectHideFlags: 0
@@ -2530,6 +2532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: df98aee4ac5a90c45a9df090320194be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  system_manager: {fileID: 1557963912}
 --- !u!65 &1563556975
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2602,7 +2605,7 @@ Transform:
   m_LocalScale: {x: 8, y: 0.1, z: 8}
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1779956132
 GameObject:

@@ -14,6 +14,8 @@ public class System_manager : MonoBehaviour
 
     public board b;
 
+    public GameObject ui_turn;
+
     //選んだモードを割り当てる
     public void set_play_mode(PLAY_MODE ptype)
     {
@@ -31,6 +33,7 @@ public class System_manager : MonoBehaviour
     //オセロのシステム起動
     public void Game_start(PLAY_MODE mode)
     {
+        ui_turn.SetActive(true);
         if (mode == PLAY_MODE.single)
         {
             //シングルプレイの処理
