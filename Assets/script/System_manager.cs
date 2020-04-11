@@ -10,9 +10,11 @@ public class System_manager : MonoBehaviour
     private TURN turn;
     //現在のターン
     private TURN now_turn;
+    //
+    private bool put_dummy;
     // Start is called before the first frame update
     void Start()
-    {   
+    {
         //ここにモードを入力
         play_mode(PLAY_MODE.single);
     }
@@ -49,43 +51,61 @@ public class System_manager : MonoBehaviour
     {
         return this.now_turn;
     }
+    public void put_check()
+    {
+        put_dummy = true;
+    }
     public void single_play()
     {
-        //set_turn(TURN.play_first);
-        //turn = get_turn();
+        set_turn(TURN.play_first);
+        turn = get_now_turn();
 
-        //if (turn == TURN.play_first)
-        //{
-        //    set_now_turn(turn);
-        //    //ループ終了処理（両者打つところがなくなる or全部の面を埋まったら)
-        //    while (end() == false)
-        //    {
-        //        //自分のターン
+        board b = GameObject.Find("Board").GetComponent<board>();
+        b.board_start();
 
-        //        //ターンを変更する
-        //        turn_chenge(get_now_turn());
-        //       //相手のターン
+        if (turn == TURN.play_first)
+        {
+            set_now_turn(turn);
+            //ループ終了処理（両者打つところがなくなる or全部の面を埋まったら)
+            if(end() == true)
+            {
+                //自分のターン
+                if (get_now_turn() == TURN.play_first) {
+                    b.can_set(b.get_thisX(), b.get_thisZ(), b.get_space_obj(), get_now_turn());
+                    //ダミー押したら
+                    if(put_dummy == true)
+                    {
+                        //置くこまをシロにする
+                        put_dummy = false;
+                    }
+                }
+                //ターンを変更する
+                turn_chenge(get_now_turn());
+                //相手のターン
+                if (get_now_turn() == TURN.draw_first) {
+                    b.can_set(b.get_thisX(), b.get_thisZ(), b.get_space_obj(), get_now_turn());
+                    Debug.Log(this.now_turn);
+                }
+            }
+        }
+        else if (turn == TURN.draw_first)
+        {
+            set_now_turn(turn);
+            //ループ終了処理（両者打つところがなくなる　or　全部の面を埋まったら)
+            if(end() == false)
+            {
+                //相手のターン
 
-        //     }
-        //}
-        //else if (turn == TURN.draw_first)
-        //{
-        //    set_now_turn(turn);
-        //    //ループ終了処理（両者打つところがなくなる　or　全部の面を埋まったら)
-        //    while (end() == false)
-        //    {
-        //        //相手のターン
+                //ターンを変更する
+                turn_chenge(get_now_turn());
+                //自分のターン
+            }
+        }
+        else
+        {
+            Debug.Log("ターンのとこでみすってるよ");
+        }
 
-        //        //ターンを変更する
-        //        turn_chenge(get_now_turn());
-        //        //自分のターン
-        //    }
-        //}
-        //else
-        //{
-        //    Debug.Log("ターンのとこでみすってるよ");
-        //}
-        
     }
     public void multi_play()
     {
@@ -108,15 +128,16 @@ public class System_manager : MonoBehaviour
     }
     public bool end()
     {
-        board b = GameObject.Find("b").GetComponent<board>();
+        board board = GameObject.Find("Board").GetComponent<board>();
         bool not_end = false;
         //すべてのマスに駒が置いてあるか判定
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                if(KOMA_TYPE.None == b.get_koma_type(i,j))
+                if(KOMA_TYPE.None == board.get_koma_type(i,j))
                 {
+           
                     not_end = true;
                 }
             }
@@ -126,7 +147,7 @@ public class System_manager : MonoBehaviour
             return true;
         }
         //どちらの駒もおけないか判定
-        if (b.can_not_revers())
+        if (board.can_not_revers())
         {
             return true;
         }

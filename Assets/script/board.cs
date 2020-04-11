@@ -6,11 +6,12 @@ public class board : MonoBehaviour
 {
 
     GameObject[,] komaArray = new GameObject[8, 8];
+    private float thisX;
+    private float thisZ;
+    private float space_obj;
 
-    // Start is called before the first frame update
-    void Start()
+    public void board_start()
     {
-
         //ボードのテクスチャを設定
         Texture2D m_texture;
         m_texture = new Texture2D(128, 128, TextureFormat.ARGB32, false);
@@ -30,15 +31,24 @@ public class board : MonoBehaviour
 
         System_manager system = GameObject.Find("system").GetComponent<System_manager>();
 
-        Invoke("setStartPosition", 1.0F);
+        setStartPosition();
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
+
     }
     void setStartPosition()
     {
         float width = this.transform.localScale.x;
         float height = this.transform.localScale.z;
-        float thisX = this.transform.localPosition.x - (width / 2);//boardの左上X
-        float thisZ = this.transform.localPosition.z - (height / 2);//boardの左上のZ
-        float space_obj = width / 8;
+        thisX = this.transform.localPosition.x - (width / 2);//boardの左上X
+        thisZ = this.transform.localPosition.z - (height / 2);//boardの左上のZ
+        space_obj = width / 8;
+        set_thisX(thisX);
+        set_thisZ(thisZ);
+        set_space_obj(space_obj);
+
         for (int i = 3; i <= 4; i++)
         {
             for (int j = 3; j <= 4; j++)
@@ -55,7 +65,7 @@ public class board : MonoBehaviour
                     Debug.Log("白のコマを配置");
                     komaArray[i, j].GetComponent<komaScript>().type = KOMA_TYPE.Black;
                     komaArray[i, j].GetComponent<komaScript>().x = i;
-                    komaArray[i, j].GetComponent<komaScript>().y = j;   
+                    komaArray[i, j].GetComponent<komaScript>().y = j;
                     komaArray[i, j].GetComponent<komaScript>().rotation(true);
                 }
                 else
@@ -68,7 +78,6 @@ public class board : MonoBehaviour
                 }
             }
         }
-        can_set(thisX, thisZ, space_obj);
     }
     public void setDummy(int x, int y, KOMA_TYPE type)
     {
@@ -85,17 +94,41 @@ public class board : MonoBehaviour
         float vecZ = thisZ + space_obj * y + (dummyHeight / 2);
         dummy.GetComponent<DummyScript>().x = x;
         dummy.GetComponent<DummyScript>().y = y;
+        dummy.GetComponent<DummyScript>().koma_type = type;
 
         Instantiate(dummy, new Vector3(vecX, dummy.transform.localPosition.y, vecZ), Quaternion.identity);
     }
+    public void set_thisX(float thisX)
+    {
+        this.thisX = thisX;
+    }
+    public float get_thisX()
+    {
+        return this.thisX;
+    }
+    public void set_thisZ(float thisZ)
+    {
+        this.thisZ = thisZ;
+    }
+    public float get_thisZ()
+    {
+        return this.thisZ;
+    }
+    public void set_space_obj(float space_obj)
+    {
+        this.space_obj = space_obj;
+    }
+    public float get_space_obj()
+    {
+        return this.space_obj;
+    }
+
     // Update is called once per frame
     void Update()
     {
     }
-    public void can_set(float thisX, float thisZ, float space_obj)
+    public void can_set(float thisX, float thisZ, float space_obj, TURN now_turn)
     {
-        System_manager system = GameObject.Find("system").GetComponent<System_manager>();
-
         int cnt = 1;
         for (int i = 0; i < 8; i++)
         {
@@ -107,13 +140,12 @@ public class board : MonoBehaviour
                     {
                         for (int l = -1; l < 2; l++)
                         {
-                            if (system.get_turn() == TURN.play_first)
+                            if (now_turn == TURN.play_first)
                             {
                                 cnt = 1;
 
                                 if (get_koma_type((i + k), (j + l)) == KOMA_TYPE.White)
-                                {
-                                   
+                                {            
                                     while (cnt != 8)
                                     {
                                         if (get_koma_type(i + (k * cnt), j + (l * cnt)) == KOMA_TYPE.Black)
@@ -150,7 +182,7 @@ public class board : MonoBehaviour
                                     }
                                 }
                             }
-                            else if (system.get_turn() == TURN.draw_first)
+                            else if (now_turn == TURN.draw_first)
                             {
                                 cnt = 1;
                                 if (get_koma_type(i + k, j + l) == KOMA_TYPE.Black)
