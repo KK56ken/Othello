@@ -12,9 +12,16 @@ public class board : MonoBehaviour
 
     public void board_start()
     {
+        System_manager system = GameObject.Find("system").GetComponent<System_manager>();
+        setStartPosition();
+    }
+    // Start is called before the first frame update
+    void Start()
+    {
         //ボードのテクスチャを設定
         Texture2D m_texture;
         m_texture = new Texture2D(128, 128, TextureFormat.ARGB32, false);
+
         float space_texture = m_texture.width / 8;
         for (int y = 0; y < m_texture.height; y++)
         {
@@ -28,14 +35,6 @@ public class board : MonoBehaviour
         }
         m_texture.Apply();
         GetComponent<Renderer>().material.mainTexture = m_texture;
-
-        System_manager system = GameObject.Find("system").GetComponent<System_manager>();
-
-        setStartPosition();
-    }
-    // Start is called before the first frame update
-    void Start()
-    {
 
     }
     void setStartPosition()
