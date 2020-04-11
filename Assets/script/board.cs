@@ -6,10 +6,11 @@ public class board : MonoBehaviour
 {
 
     GameObject[,] komaArray = new GameObject[8, 8];
+    GameObject[,] dummy_array = new GameObject[8,8];
     private float thisX;
     private float thisZ;
     private float space_obj;
-
+    public System_manager system_manager;
     public void board_start()
     {
         System_manager system = GameObject.Find("system").GetComponent<System_manager>();
@@ -77,8 +78,15 @@ public class board : MonoBehaviour
                 }
             }
         }
+        for(int i = 0; i < 8; i++)
+        {
+            for(int j = 0; j < 8; j++)
+            {
+                dummy_array[i,j] = setDummy(i,j,KOMA_TYPE.None);
+            }
+        }
     }
-    public void setDummy(int x, int y, KOMA_TYPE type)
+    public GameObject setDummy(int y, int x, KOMA_TYPE type)
     {
         float width = this.transform.localScale.x;
         float height = this.transform.localScale.z;
@@ -94,8 +102,11 @@ public class board : MonoBehaviour
         dummy.GetComponent<DummyScript>().x = x;
         dummy.GetComponent<DummyScript>().y = y;
         dummy.GetComponent<DummyScript>().koma_type = type;
-
-        Instantiate(dummy, new Vector3(vecX, dummy.transform.localPosition.y, vecZ), Quaternion.identity);
+        dummy.GetComponent<DummyScript>().system_manager = system_manager;
+        dummy.SetActive(false);
+        Debug.Log("<COLOR=blue>ダミーを生成</COLOR>");
+        
+        return Instantiate(dummy, new Vector3(vecX, dummy.transform.localPosition.y, vecZ), Quaternion.identity);
     }
     public void set_thisX(float thisX)
     {
@@ -126,8 +137,16 @@ public class board : MonoBehaviour
     void Update()
     {
     }
-    public void can_set(float thisX, float thisZ, float space_obj, TURN now_turn)
+    public void can_set(TURN now_turn)
     {
+        Debug.LogError("canset呼び出し");
+        for(int i = 0; i< 8; i++)
+        {
+            for(int j = 0; j < 8; j++)
+            {
+                dummy_array[i, j].SetActive(false);
+            }
+        }
         int cnt = 1;
         for (int i = 0; i < 8; i++)
         {
@@ -169,15 +188,10 @@ public class board : MonoBehaviour
                                         //Debug.Log(i + (k * cnt));
                                         //Debug.Log(j + (l * cnt));
 
-                                        GameObject dummy = (GameObject)Resources.Load(@"dummy");
-                                        float dummyWidth = dummy.transform.localScale.x;
-                                        float dummyHeight = dummy.transform.localScale.z;
-                                        float vecX = thisX + space_obj * i + (dummyWidth / 2);
-                                        float vecZ = thisZ + space_obj * j + (dummyHeight / 2);
-                                        dummy.GetComponent<DummyScript>().x = i;
-                                        dummy.GetComponent<DummyScript>().y = j;
-
-                                        Instantiate(dummy, new Vector3(vecX, dummy.transform.localPosition.y, vecZ), Quaternion.identity);
+                                        //非表示のダミーを表示する
+                                        Debug.Log("<COLOR=blue>ダミー[" + i + "," + j + "]:true</COLOR>");
+                                        dummy_array[i, j].SetActive(true);
+                                        dummy_array[i, j].GetComponent<DummyScript>().koma_type = turnToKomaType(now_turn);
                                     }
                                 }
                             }
@@ -202,16 +216,10 @@ public class board : MonoBehaviour
                                     else
                                     {
 
-                                        GameObject dummy = (GameObject)Resources.Load(@"dummy");
-                                        float dummyWidth = dummy.transform.localScale.x;
-                                        float dummyHeight = dummy.transform.localScale.z;
-                                        float vecX = thisX + space_obj * (i + (k * cnt)) + (dummyWidth / 2);
-                                        float vecZ = thisZ + space_obj * (j + (l * cnt)) + (dummyHeight / 2);
-                                        dummy.GetComponent<DummyScript>().x = i;
-                                        dummy.GetComponent<DummyScript>().y = j;
-
-                                        Instantiate(dummy, new Vector3(vecX, dummy.transform.localPosition.y, vecZ), Quaternion.identity);
-
+                                        //非表示のダミーを表示する
+                                        Debug.Log("<COLOR=blue>ダミー[" + i + "," + j + "]:true</COLOR>");
+                                        dummy_array[i, j].SetActive(true);
+                                        dummy_array[i, j].GetComponent<DummyScript>().koma_type = turnToKomaType(now_turn);
                                     }
                                 }
                             }
@@ -220,6 +228,21 @@ public class board : MonoBehaviour
                 }
             }
         }
+    }
+    KOMA_TYPE turnToKomaType(TURN turn)
+    {
+        KOMA_TYPE type;
+
+        if(turn == TURN.play_first)
+        {
+            type = KOMA_TYPE.Black;
+        }
+        else
+        {
+            type = KOMA_TYPE.White;
+        }
+
+        return type;
     }
     public bool can_not_revers()
     {
