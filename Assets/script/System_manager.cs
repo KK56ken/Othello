@@ -6,17 +6,30 @@ public enum PLAY_MODE { single, multi}
 public enum TURN { play_first, draw_first}
 public class System_manager : MonoBehaviour
 {
+    private PLAY_MODE ptype;
     //最初に選んだターン
     private TURN turn;
     //現在のターン
     private TURN now_turn;
     //
     private bool put_dummy;
+    public void set_play_mode(PLAY_MODE ptype)
+    {
+        this.ptype = ptype;
+    }
+    public PLAY_MODE get_play_mode()
+    {
+        return this.ptype;
+    }
     // Start is called before the first frame update
     void Start()
     {
+    }
+    public void Game_start()
+    {
         //ここにモードを入力
         play_mode(PLAY_MODE.single);
+        Debug.Log("ターン変わったよ"+ this.turn);
     }
     public void play_mode(PLAY_MODE mode)
     {
@@ -57,15 +70,11 @@ public class System_manager : MonoBehaviour
     }
     public void single_play()
     {
-        set_turn(TURN.play_first);
-        turn = get_now_turn();
-
         board b = GameObject.Find("Board").GetComponent<board>();
         b.board_start();
 
-        if (turn == TURN.play_first)
+        if (this.turn == TURN.play_first)
         {
-            set_now_turn(turn);
             //ループ終了処理（両者打つところがなくなる or全部の面を埋まったら)
             if(end() == true)
             {
@@ -84,21 +93,33 @@ public class System_manager : MonoBehaviour
                 //相手のターン
                 if (get_now_turn() == TURN.draw_first) {
                     b.can_set(b.get_thisX(), b.get_thisZ(), b.get_space_obj(), get_now_turn());
-                    Debug.Log(this.now_turn);
                 }
             }
         }
-        else if (turn == TURN.draw_first)
+        else if (this.turn == TURN.draw_first)
         {
-            set_now_turn(turn);
             //ループ終了処理（両者打つところがなくなる　or　全部の面を埋まったら)
             if(end() == false)
             {
                 //相手のターン
+                if (get_now_turn() == TURN.draw_first)
+                {
+                    b.can_set(b.get_thisX(), b.get_thisZ(), b.get_space_obj(), get_now_turn());
+                }
 
                 //ターンを変更する
                 turn_chenge(get_now_turn());
                 //自分のターン
+                if (get_now_turn() == TURN.play_first)
+                {
+                    b.can_set(b.get_thisX(), b.get_thisZ(), b.get_space_obj(), get_now_turn());
+                    //ダミー押したら
+                    if (put_dummy == true)
+                    {
+                        //置くこまをシロにする
+                        put_dummy = false;
+                    }
+                }
             }
         }
         else
