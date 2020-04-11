@@ -2,21 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum PLAY_MODE { single, multi}
-public enum TURN { play_first, draw_first}
+public enum PLAY_MODE { single, multi }
+public enum TURN { play_first, draw_first }
 public class System_manager : MonoBehaviour
 {
     private PLAY_MODE ptype;
     //最初に選んだターン
     private TURN turn;
     //現在のターン
-    private TURN now_turn;
-    //
-    private bool put_dummy;
+    private TURN now_turn = TURN.play_first;
+
+    public board b;
+
+    //選んだモードを割り当てる
     public void set_play_mode(PLAY_MODE ptype)
     {
         this.ptype = ptype;
     }
+    //選んだモードを取得する
     public PLAY_MODE get_play_mode()
     {
         return this.ptype;
@@ -25,18 +28,13 @@ public class System_manager : MonoBehaviour
     void Start()
     {
     }
-    public void Game_start()
-    {
-        //ここにモードを入力
-        play_mode(PLAY_MODE.single);
-        Debug.Log("ターン変わったよ"+ this.turn);
-    }
-    public void play_mode(PLAY_MODE mode)
+    //オセロのシステム起動
+    public void Game_start(PLAY_MODE mode)
     {
         if (mode == PLAY_MODE.single)
         {
             //シングルプレイの処理
-            single_play();
+            single_play_start();
         }
         else if (mode == PLAY_MODE.multi)
         {
@@ -45,7 +43,7 @@ public class System_manager : MonoBehaviour
         }
         else
         {
-            Debug.Log("mode選びミスってませんか？");
+            Debug.LogError("mode選びミスってませんか？");
         }
     }
     public void set_turn(TURN turn)
@@ -64,119 +62,75 @@ public class System_manager : MonoBehaviour
     {
         return this.now_turn;
     }
-    public void put_check()
+    //シングルプレイの初回の処理
+    public void single_play_start()
     {
-        put_dummy = true;
-    }
-    public void single_play()
-    {
-        board b = GameObject.Find("Board").GetComponent<board>();
         b.board_start();
 
-        if (this.turn == TURN.play_first)
+        //ループ終了処理（両者打つところがなくなる or全部の面を埋まったら)
+        please_input();
+    }
+    //ターンを切り替えるときの処理
+    public void turn_change()
+    {
+        if (now_turn == TURN.draw_first)
+            now_turn = TURN.play_first;
+        else if (now_turn == TURN.play_first)
+            now_turn = TURN.draw_first;
+        else Debug.LogError("now_turn:値は不正です");
+        
+        Debug.Log("<COLOR=YELLOW>ターン変わったよ" + this.turn + "</COLOR>");
+
+        please_input();
+    }
+    public void please_input()
+    {
+        if (!end_check())
         {
-            //ループ終了処理（両者打つところがなくなる or全部の面を埋まったら)
-            if(end() == true)
+            if (now_turn == turn)
             {
-                //自分のターン
-                if (get_now_turn() == TURN.play_first) {
-                    b.can_set(b.get_thisX(), b.get_thisZ(), b.get_space_obj(), get_now_turn());
-                    //ダミー押したら
-                    if(put_dummy == true)
-                    {
-                        //置くこまをシロにする
-                        put_dummy = false;
-                    }
-                }
-                //ターンを変更する
-                turn_chenge(get_now_turn());
-                //相手のターン
-                if (get_now_turn() == TURN.draw_first) {
-                    b.can_set(b.get_thisX(), b.get_thisZ(), b.get_space_obj(), get_now_turn());
-                }
+                b.can_set(now_turn);
+                Debug.Log("<COLOR=YELLOW>プレイヤー入力待ち</COLOR>");
+            }
+            else
+            {
+                //cpuの配置
+                b.can_set(now_turn);
+                Debug.Log("<COLOR=YELLOW>CPU入力待ち</COLOR>");
             }
         }
-        else if (this.turn == TURN.draw_first)
-        {
-            //ループ終了処理（両者打つところがなくなる　or　全部の面を埋まったら)
-            if(end() == false)
-            {
-                //相手のターン
-                if (get_now_turn() == TURN.draw_first)
-                {
-                    b.can_set(b.get_thisX(), b.get_thisZ(), b.get_space_obj(), get_now_turn());
-                }
-
-                //ターンを変更する
-                turn_chenge(get_now_turn());
-                //自分のターン
-                if (get_now_turn() == TURN.play_first)
-                {
-                    b.can_set(b.get_thisX(), b.get_thisZ(), b.get_space_obj(), get_now_turn());
-                    //ダミー押したら
-                    if (put_dummy == true)
-                    {
-                        //置くこまをシロにする
-                        put_dummy = false;
-                    }
-                }
-            }
-        }
-        else
-        {
-            Debug.Log("ターンのとこでみすってるよ");
-        }
-
     }
     public void multi_play()
     {
+    }
 
-    }
-    public void turn_chenge(TURN turn)
+    //終了;true
+    public bool end_check()
     {
-        if(turn == TURN.play_first)
-        {
-            set_now_turn(TURN.draw_first);
-        }
-        else if(turn == TURN.draw_first)
-        {
-            set_now_turn(TURN.play_first);
-        }
-        else
-        {
-            Debug.Log("例外発生　turn_chengeでエラーが起こってるよ");
-        }
-    }
-    public bool end()
-    {
-        board board = GameObject.Find("Board").GetComponent<board>();
-        bool not_end = false;
-        //すべてのマスに駒が置いてあるか判定
+        bool end_flag = true;
+        //すべてのマスに駒が置いてないか判定
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                if(KOMA_TYPE.None == board.get_koma_type(i,j))
+                if (KOMA_TYPE.None == b.get_koma_type(i, j))
                 {
-           
-                    not_end = true;
+                    end_flag = false;
+                    break;
                 }
             }
         }
-        if (not_end == false)
-        {
-            return true;
-        }
         //どちらの駒もおけないか判定
-        if (board.can_not_revers())
+        if (!b.can_not_revers())
         {
-            return true;
+            Debug.Log("<COLOR=RED>両者パス</COLOR>");
+            end_flag = true;
         }
-        return false;
+        return end_flag;
     }
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 }

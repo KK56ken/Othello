@@ -27,7 +27,8 @@ public class turnSelect : MonoBehaviour
         else if(selectedLabel == "toggle_second")
             system_manager.set_turn(TURN.draw_first);
 
-        system_manager.Game_start();
+        //とりあえずシングルモード
+        system_manager.Game_start(PLAY_MODE.single);
         this.transform.root.gameObject.SetActive(false);
         Debug.Log(selectedLabel + "を選択しました。");
     }
