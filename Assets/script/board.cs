@@ -96,7 +96,7 @@ public class board : MonoBehaviour
     {
         System_manager system = GameObject.Find("system").GetComponent<System_manager>();
 
-        int cnt = 0;
+        int cnt = 1;
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
@@ -109,11 +109,11 @@ public class board : MonoBehaviour
                         {
                             if (system.get_turn() == TURN.play_first)
                             {
-
                                 cnt = 1;
 
                                 if (get_koma_type((i + k), (j + l)) == KOMA_TYPE.White)
                                 {
+                                   
                                     while (cnt != 8)
                                     {
                                         if (get_koma_type(i + (k * cnt), j + (l * cnt)) == KOMA_TYPE.Black)
@@ -128,7 +128,6 @@ public class board : MonoBehaviour
                                     }
                                     else
                                     {
-
                                         //Debug.Log("i = " + i + " , " + " j = " + j);
                                         //Debug.Log("k = " + k + " , " + " l = " + l);
 
@@ -138,6 +137,7 @@ public class board : MonoBehaviour
 
                                         //Debug.Log(i + (k * cnt));
                                         //Debug.Log(j + (l * cnt));
+
                                         GameObject dummy = (GameObject)Resources.Load(@"dummy");
                                         float dummyWidth = dummy.transform.localScale.x;
                                         float dummyHeight = dummy.transform.localScale.z;
@@ -147,14 +147,12 @@ public class board : MonoBehaviour
                                         dummy.GetComponent<DummyScript>().y = j;
 
                                         Instantiate(dummy, new Vector3(vecX, dummy.transform.localPosition.y, vecZ), Quaternion.identity);
-
-
                                     }
                                 }
                             }
                             else if (system.get_turn() == TURN.draw_first)
                             {
-                                cnt = 0;
+                                cnt = 1;
                                 if (get_koma_type(i + k, j + l) == KOMA_TYPE.Black)
                                 {
                                     while (cnt != 8)
@@ -172,6 +170,7 @@ public class board : MonoBehaviour
                                     }
                                     else
                                     {
+
                                         GameObject dummy = (GameObject)Resources.Load(@"dummy");
                                         float dummyWidth = dummy.transform.localScale.x;
                                         float dummyHeight = dummy.transform.localScale.z;
@@ -190,6 +189,74 @@ public class board : MonoBehaviour
                 }
             }
         }
+    }
+    public bool can_not_revers()
+    {
+        System_manager system = GameObject.Find("system").GetComponent<System_manager>();
+
+        int cnt = 1;
+        bool[] not_revers = new bool[2];
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (!(i == 3 && j == 4) && !(i == 4 && j == 3) && !(i == 3 && j == 3) && !(i == 4 && j == 4))
+                {
+                    for (int k = -1; k < 2; k++)
+                    {
+                        for (int l = -1; l < 2; l++)
+                        {
+                            cnt = 1;
+                            if (get_koma_type((i + k), (j + l)) == KOMA_TYPE.White)
+                            {
+                                while (cnt != 8)
+                                {
+                                    if (get_koma_type(i + (k * cnt), j + (l * cnt)) == KOMA_TYPE.Black)
+                                    {
+                                        break;
+                                    }
+                                    cnt += 1;
+                                }
+                                if (cnt == 8)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    not_revers[0] = true;
+                                }
+                            }
+                            cnt = 1;
+                            if (get_koma_type(i + k, j + l) == KOMA_TYPE.Black)
+                            {
+                                while (cnt != 8)
+                                {
+                                    if (get_koma_type(i + (k * cnt), j + (l * cnt)) == KOMA_TYPE.White)
+                                    {
+                                        break;
+                                    }
+                                    cnt += 1;
+                                }
+                                if (cnt == 8)
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    not_revers[1] = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if(not_revers[0] && not_revers[1]) {
+
+            return true;
+
+        }
+        return false;
     }
     public void SetKoma(int x, int y, KOMA_TYPE type)
     {
@@ -210,10 +277,7 @@ public class board : MonoBehaviour
             komaArray[x, y].transform.GetChild(0).Rotate(0, 0, 180);
         revers(x, y);
     }
-    public void check_revers(int x, int y)
-    {
 
-    }
     public void revers(int x, int y)
     {
         Debug.Log("<color=blue>置いた場所 x:" + x + " y:" + y + " 色:" + komaArray[x, y].GetComponent<komaScript>().type + "</color>");
@@ -229,7 +293,6 @@ public class board : MonoBehaviour
                     int chenge_x = x + i;
                     int chenge_y = y + j;
                     int cnt = 1;
-                    bool revers_t = false;
 
                     if (get_koma_type(chenge_x, chenge_y) == KOMA_TYPE.White)
                     {
@@ -263,7 +326,6 @@ public class board : MonoBehaviour
                     int chenge_x = x + i;
                     int chenge_y = y + j;
                     int cnt = 1;
-                    bool revers_t = false;
 
                     if (get_koma_type(chenge_x, chenge_y) == KOMA_TYPE.Black)
                     {
