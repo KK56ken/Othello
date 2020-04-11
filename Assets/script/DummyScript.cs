@@ -20,9 +20,12 @@ public class DummyScript : MonoBehaviour
     public void setKoma()
     {
         board board = GameObject.Find("Board").GetComponent<board>();
+        System_manager system = GameObject.Find("system").GetComponent<System_manager>();
+
         try
         {
             board.SetKoma(x, y,koma_type);
+            system.put_check();
         }
         catch { }
         Destroy(gameObject);
