@@ -28,7 +28,7 @@ public class turnSelect : MonoBehaviour
             system_manager.set_turn(TURN.draw_first);
 
         //とりあえずシングルモード
-        system_manager.Game_start(PLAY_MODE.single);
+        system_manager.Game_start(PLAY_MODE.multi);
         this.transform.root.gameObject.SetActive(false);
         Debug.Log(selectedLabel + "を選択しました。");
     }
