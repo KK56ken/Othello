@@ -27,6 +27,6 @@ public class DummyScript : MonoBehaviour
         }
         catch { }
         system_manager.turn_change();
-        Destroy(gameObject);
+        
     }
 }

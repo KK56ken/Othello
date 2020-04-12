@@ -6,14 +6,13 @@ public class board : MonoBehaviour
 {
 
     GameObject[,] komaArray = new GameObject[8, 8];
-    GameObject[,] dummy_array = new GameObject[8,8];
+    GameObject[,] dummy_array = new GameObject[8, 8];
     private float thisX;
     private float thisZ;
     private float space_obj;
     public System_manager system_manager;
     public void board_start()
     {
-        System_manager system = GameObject.Find("system").GetComponent<System_manager>();
         setStartPosition();
     }
     // Start is called before the first frame update
@@ -78,15 +77,15 @@ public class board : MonoBehaviour
                 }
             }
         }
-        for(int i = 0; i < 8; i++)
+        for (int i = 0; i < 8; i++)
         {
-            for(int j = 0; j < 8; j++)
+            for (int j = 0; j < 8; j++)
             {
-                dummy_array[i,j] = setDummy(i,j,KOMA_TYPE.None);
+                dummy_array[i, j] = setDummy(i, j, KOMA_TYPE.None);
             }
         }
     }
-    public GameObject setDummy(int y, int x, KOMA_TYPE type)
+    public GameObject setDummy(int x, int y, KOMA_TYPE type)
     {
         float width = this.transform.localScale.x;
         float height = this.transform.localScale.z;
@@ -97,15 +96,15 @@ public class board : MonoBehaviour
         GameObject dummy = (GameObject)Resources.Load(@"dummy");
         float dummyWidth = dummy.transform.localScale.x;
         float dummyHeight = dummy.transform.localScale.z;
-        float vecX = thisX + space_obj * x + (dummyWidth / 2);
         float vecZ = thisZ + space_obj * y + (dummyHeight / 2);
+        float vecX = thisX + space_obj * x + (dummyWidth / 2);
         dummy.GetComponent<DummyScript>().x = x;
         dummy.GetComponent<DummyScript>().y = y;
         dummy.GetComponent<DummyScript>().koma_type = type;
         dummy.GetComponent<DummyScript>().system_manager = system_manager;
         dummy.SetActive(false);
         Debug.Log("<COLOR=blue>ダミーを生成</COLOR>");
-        
+
         return Instantiate(dummy, new Vector3(vecX, dummy.transform.localPosition.y, vecZ), Quaternion.identity);
     }
     public void set_thisX(float thisX)
@@ -139,88 +138,82 @@ public class board : MonoBehaviour
     }
     public void can_set(TURN now_turn)
     {
-        Debug.LogError("canset呼び出し");
-        for(int i = 0; i< 8; i++)
-        {
-            for(int j = 0; j < 8; j++)
-            {
-                dummy_array[i, j].SetActive(false);
-            }
-        }
-        int cnt = 1;
         for (int i = 0; i < 8; i++)
         {
             for (int j = 0; j < 8; j++)
             {
-                if (!(i == 3 && j == 4) && !(i == 4 && j == 3) && !(i == 3 && j == 3) && !(i == 4 && j == 4))
+                dummy_array[i, j].SetActive(false);
+            }
+        }
+
+        //相手のターンを取得する
+
+        KOMA_TYPE now_type = KOMA_TYPE.None;
+        KOMA_TYPE opp_type = KOMA_TYPE.None;
+        if (now_turn == TURN.play_first)
+        {
+            now_type = KOMA_TYPE.Black;
+            opp_type = KOMA_TYPE.White;
+        }
+        else if (now_turn == TURN.draw_first)
+        {
+            now_type = KOMA_TYPE.White;
+            opp_type = KOMA_TYPE.Black;
+        }
+        else
+        {
+            Debug.LogError("TURNの値が不正です");
+        } 
+
+
+        Debug.Log("<COLOR=RED>" + now_type + "</COLOR><COLOR=YELLOW>の打てる場所探索</COLOR>");
+
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (get_koma_type(i, j) == KOMA_TYPE.None)
                 {
-                    for (int k = -1; k < 2; k++)
+                    for (int dir_x = -1; dir_x <= 1; dir_x++)
                     {
-                        for (int l = -1; l < 2; l++)
+                        for (int dir_y = -1; dir_y <= 1; dir_y++)
                         {
-                            if (now_turn == TURN.play_first)
+                            //探索先が探索元のマスの場合スルー
+                            if (i + dir_x == 0 && j + dir_y == 0)
+                                continue;
+                            //周囲8マスに相手のマスがあったら
+                            if (get_koma_type((i + dir_x), (j + dir_y)) == opp_type)
                             {
-                                cnt = 1;
-
-                                if (get_koma_type((i + k), (j + l)) == KOMA_TYPE.White)
-                                {            
-                                    while (cnt != 8)
-                                    {
-                                        if (get_koma_type(i + (k * cnt), j + (l * cnt)) == KOMA_TYPE.Black)
-                                        {
-                                            break;
-                                        }
-                                        cnt += 1;
-                                    }
-                                    if (cnt == 8)
-                                    {
-                                        continue;
-                                    }
-                                    else
-                                    {
-                                        //Debug.Log("i = " + i + " , " + " j = " + j);
-                                        //Debug.Log("k = " + k + " , " + " l = " + l);
-
-                                        //Debug.Log("i + k = " + (i + k) + " , " + " j + l = " + (j + l));
-                                        //Debug.Log(get_koma_type(i + k, j + l));
-                                        //Debug.Log(cnt);
-
-                                        //Debug.Log(i + (k * cnt));
-                                        //Debug.Log(j + (l * cnt));
-
-                                        //非表示のダミーを表示する
-                                        Debug.Log("<COLOR=blue>ダミー[" + i + "," + j + "]:true</COLOR>");
-                                        dummy_array[i, j].SetActive(true);
-                                        dummy_array[i, j].GetComponent<DummyScript>().koma_type = turnToKomaType(now_turn);
-                                    }
-                                }
-                            }
-                            else if (now_turn == TURN.draw_first)
-                            {
-                                cnt = 1;
-                                if (get_koma_type(i + k, j + l) == KOMA_TYPE.Black)
+                                //Debug.Log("<COLOR=YELLOW>y:" + i + " x:" + j + "から" + dir_y + "," + dir_x + "方向へ探索</COLOR>");
+                                //延長線上探索
+                                int cnt = 2;
+                                while (true)
                                 {
-                                    while (cnt != 8)
+                                    //範囲外:ループを抜ける
+                                    if (i + (dir_x * cnt) < 0 || i + (dir_x * cnt) > 7
+                                        || j + (dir_y * cnt) < 0 || j + (dir_y * cnt) > 7)
                                     {
-
-                                        if (get_koma_type(i + (k * cnt), j + (l * cnt)) == KOMA_TYPE.White)
-                                        {
-                                            break;
-                                        }
-                                        cnt += 1;
+                                        break;
                                     }
-                                    if (cnt == 8)
+                                    //探索先にコマが置かれていないorダミーが置かれている:ループを抜ける
+                                    if (get_koma_type(i + (dir_x * cnt), j + (dir_y * cnt)) == KOMA_TYPE.None)
                                     {
-                                        continue;
+                                        break;
                                     }
-                                    else
+                                    //探索先に自分のマス:ダミー表示,ループを抜ける
+                                    if (get_koma_type(i + (dir_x * cnt), j + (dir_y * cnt)) == now_type)
                                     {
-
-                                        //非表示のダミーを表示する
                                         Debug.Log("<COLOR=blue>ダミー[" + i + "," + j + "]:true</COLOR>");
                                         dummy_array[i, j].SetActive(true);
                                         dummy_array[i, j].GetComponent<DummyScript>().koma_type = turnToKomaType(now_turn);
+                                        break;
                                     }
+                                    if (cnt > 8)
+                                    {
+                                        Debug.LogError("whileが規定回数以上回りました");
+                                        return;
+                                    }
+                                    cnt++;
                                 }
                             }
                         }
@@ -233,7 +226,7 @@ public class board : MonoBehaviour
     {
         KOMA_TYPE type;
 
-        if(turn == TURN.play_first)
+        if (turn == TURN.play_first)
         {
             type = KOMA_TYPE.Black;
         }
@@ -305,7 +298,8 @@ public class board : MonoBehaviour
                 }
             }
         }
-        if(not_revers[0] && not_revers[1]) {
+        if (not_revers[0] && not_revers[1])
+        {
 
             return true;
 
@@ -326,6 +320,9 @@ public class board : MonoBehaviour
         float vecX = thisX + space_obj * x + (objWidth / 2);
         float vecZ = thisZ + space_obj * y + (objHeight / 2);
         komaArray[x, y] = Instantiate(obj, new Vector3(vecX, obj.transform.localPosition.y, vecZ), Quaternion.identity);
+        komaArray[x, y].GetComponent<komaScript>().x = x;
+        komaArray[x, y].GetComponent<komaScript>().y = y;
+        komaArray[x, y].GetComponent<komaScript>().type = type;
 
         if (type == KOMA_TYPE.White)
             komaArray[x, y].transform.GetChild(0).Rotate(0, 0, 180);
@@ -334,76 +331,70 @@ public class board : MonoBehaviour
 
     public void revers(int x, int y)
     {
-        Debug.Log("<color=blue>置いた場所 x:" + x + " y:" + y + " 色:" + komaArray[x, y].GetComponent<komaScript>().type + "</color>");
-        //白をひっくり返す処理
-        if (komaArray[x, y].GetComponent<komaScript>().type == KOMA_TYPE.Black)
+        //置いた色
+        KOMA_TYPE set_type = get_koma_type(x, y);
+        //相手の色
+        KOMA_TYPE opp_type = KOMA_TYPE.None;
+        if (set_type == KOMA_TYPE.Black)
+            opp_type = KOMA_TYPE.White;
+        else
+            opp_type = KOMA_TYPE.Black;
+
+
+        Debug.Log("==========================================================================\n"+
+                  "==========================================================================\n"+
+                  "<color=blue>置いた場所 x:" + x + " y:" + y + "</ color >\n"+
+                  "<color=blue>置いた色:" + set_type + "</color>\n"+
+                  "<color=blue>相手の色" + opp_type + "</color>");
+        //ひっくり返す処理
+        for (int dir_x = -1; dir_x <= 1; dir_x++)
         {
-
-            for (int i = -1; i < 2; i++)
+            for (int dir_y = -1; dir_y <= 1; dir_y++)
             {
-                for (int j = -1; j < 2; j++)
+                //周囲の座標を取得
+                if (get_koma_type(x + dir_x, y + dir_y) == opp_type)
                 {
-                    //周囲の座標を取得
-                    int chenge_x = x + i;
-                    int chenge_y = y + j;
-                    int cnt = 1;
-
-                    if (get_koma_type(chenge_x, chenge_y) == KOMA_TYPE.White)
+                    Debug.Log("<COLOR=GREEN>" + dir_x + "," + dir_y + "方向に" + opp_type + "を確認</COLOR>");
+                    int cnt = 2;
+                    while (true)
                     {
-                        Debug.Log("i = " + i + " j = " + j);
-                        Debug.Log("chenge_x = " + chenge_x + " chenge_y = " + chenge_y);
-
-                        //ひっくり返せるか確認処理
-                        while (komaArray[chenge_x + (i * cnt), chenge_y + (j * cnt)].GetComponent<komaScript>().type == KOMA_TYPE.White)
+                        //範囲外:ループを抜ける
+                        if (y + (dir_y * cnt) < 0 || y + (dir_y * cnt) > 7
+                            || x + (dir_x * cnt) < 0 || x + (dir_x * cnt) > 7)
                         {
-                            cnt += 1;
+                            break;
                         }
-                        while (cnt != 0)
+                        //探索先にコマが置かれていないorダミーが置かれている:ループを抜ける
+                        if (get_koma_type(x + (dir_x * cnt), y + (dir_y * cnt)) == KOMA_TYPE.None)
                         {
-                            Debug.Log((x + (i * cnt)) + "," + (y + (j * cnt)));
-                            komaArray[x + (i * cnt), y + (j * cnt)].GetComponent<komaScript>().rotation(false);
-                            komaArray[x + (i * cnt), y + (j * cnt)].GetComponent<komaScript>().type = KOMA_TYPE.Black;
+                            break;
+                        }
+                        //探索先に自分のマス:返しながら戻る
+                        if (get_koma_type(x + (dir_x * cnt), y + (dir_y * cnt)) == set_type)
+                        {
+                            Debug.Log("<COLOR=GREEN>" + (x + (dir_x * cnt)) + "," + (y + (dir_y * cnt)) + "に" + set_type + "を確認</COLOR>");
                             cnt--;
+                            //打てる
+                            while (cnt > 0)
+                            {
+                                Debug.Log("<COLOR=GREEN>"+(x + (dir_x * cnt)) + ", " + (y + (dir_y * cnt))+"を反転</COLOR>");
+                                komaArray[x + (dir_x * cnt), y + (dir_y * cnt)].GetComponent<komaScript>().rotation(true);
+                                cnt--;
+                            }
+                            break;
                         }
+                        if (cnt > 8)
+                        {
+                            Debug.LogError("whileが規定回数以上回りました");
+                            return;
+                        }
+                        cnt++;
                     }
                 }
             }
-        }
-        //黒をひっくり返す処理
-        else if (komaArray[x, y].GetComponent<komaScript>().type == KOMA_TYPE.White)
-        {
-            for (int i = -1; i < 2; i++)
-            {
-                for (int j = -1; j < 2; j++)
-                {
-                    //周囲の座標を取得
-                    int chenge_x = x + i;
-                    int chenge_y = y + j;
-                    int cnt = 1;
-
-                    if (get_koma_type(chenge_x, chenge_y) == KOMA_TYPE.Black)
-                    {
-                        Debug.Log("i = " + i + " j = " + j);
-                        Debug.Log("chenge_x = " + chenge_x + " chenge_y = " + chenge_y);
-
-                        //ひっくり返せるか確認処理
-                        while (komaArray[chenge_x + (i * cnt), chenge_y + (j * cnt)].GetComponent<komaScript>().type == KOMA_TYPE.Black)
-                        {
-                            cnt += 1;
-                        }
-                        while (cnt != 0)
-                        {
-                            Debug.Log((x + (i * cnt)) + "," + (y + (j * cnt)));
-                            komaArray[x + (i * cnt), y + (j * cnt)].GetComponent<komaScript>().rotation(false);
-                            komaArray[x + (i * cnt), y + (j * cnt)].GetComponent<komaScript>().type = KOMA_TYPE.White;
-                            cnt--;
-                        }
-                    }
-                }
-            }
-
         }
     }
+
 
     public KOMA_TYPE get_koma_type(int x, int y)
     {

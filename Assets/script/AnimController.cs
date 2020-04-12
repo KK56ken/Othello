@@ -9,7 +9,7 @@ public class AnimController : MonoBehaviour
     void Start()
     {
         defaultY = transform.position.y;
-        Debug.Log("AnimControllerのコンストラクタ");
+        //Debug.Log("AnimControllerのコンストラクタ");
     }
 
     // Update is called once per frame

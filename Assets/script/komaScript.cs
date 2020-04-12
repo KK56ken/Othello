@@ -5,9 +5,9 @@ using UnityEngine;
 public enum KOMA_TYPE { Black, White, None }
 public class komaScript : MonoBehaviour
 {
-    public KOMA_TYPE type;
     public int x;
     public int y;
+    public KOMA_TYPE type;
     public AnimController anim;
 
 
@@ -31,18 +31,11 @@ public class komaScript : MonoBehaviour
         m_texture.Apply();
         transform.GetChild(0).GetComponent<Renderer>().material.mainTexture = m_texture;
     }
-    public void set_defaultRotation()
-    {
-        if (type == KOMA_TYPE.White)
-        {
-            Debug.Log("変更前:" + transform.GetChild(0).rotation);
-            transform.GetChild(0).localEulerAngles = new Vector3(0, 0, 180);
-            Debug.Log("変更後:" + transform.GetChild(0).rotation);
-        }
-    }
     public void rotation(bool forced)
     {
+        Debug.Log(x + "," + y + "を反転:反転前(" + type + ")");
         anim.koma_rotation(forced);
+        Debug.Log(x + "," + y + "を反転:反転後(" + type + ")");
     }
     // Update is called once per frame
     void Update()
