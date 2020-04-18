@@ -24,6 +24,15 @@ public class DummyScript : MonoBehaviour
         try
         {
             board.SetKoma(x, y,koma_type);
+            if (koma_type == KOMA_TYPE.Black)
+            {
+                system_manager.send(x, y, 1);
+            }
+            else
+            {
+                system_manager.send(x, y, 0);
+            }
+            system_manager.fsend();
         }
         catch { }
         system_manager.turn_change();
