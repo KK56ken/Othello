@@ -23,18 +23,10 @@ public class DummyScript : MonoBehaviour
         board board = GameObject.Find("Board").GetComponent<board>();
         try
         {
-            board.SetKoma(x, y, koma_type);
-            if (koma_type == KOMA_TYPE.Black)
-            {
-                system_manager.send(x, y, 1);
-            }
-            else
-            {
-                system_manager.send(x, y, 0);
-            }
-            system_manager.fsend();
+            board.SetKoma(x, y,koma_type);
         }
         catch { }
         system_manager.turn_change();
+        
     }
 }
