@@ -62,10 +62,10 @@ public class board : MonoBehaviour
                 {
                     //コマを白にする
                     Debug.Log("白のコマを配置");
-                    komaArray[i, j].GetComponent<komaScript>().type = KOMA_TYPE.Black;
+                    komaArray[i, j].GetComponent<komaScript>().type = KOMA_TYPE.White;
                     komaArray[i, j].GetComponent<komaScript>().x = i;
                     komaArray[i, j].GetComponent<komaScript>().y = j;
-                    komaArray[i, j].GetComponent<komaScript>().rotation(true);
+                    komaArray[i, j].GetComponent<komaScript>().setTyoe(get_koma_type(i,j));
                 }
                 else
                 {
@@ -324,8 +324,8 @@ public class board : MonoBehaviour
         komaArray[x, y].GetComponent<komaScript>().y = y;
         komaArray[x, y].GetComponent<komaScript>().type = type;
 
-        if (type == KOMA_TYPE.White)
-            komaArray[x, y].transform.GetChild(0).Rotate(0, 0, 180);
+        komaArray[x, y].GetComponent<komaScript>().setTyoe(get_koma_type(x,y));
+
         revers(x, y);
     }
 

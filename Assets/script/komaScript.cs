@@ -33,9 +33,11 @@ public class komaScript : MonoBehaviour
     }
     public void rotation(bool forced)
     {
-        Debug.Log(x + "," + y + "を反転:反転前(" + type + ")");
         anim.koma_rotation(forced);
-        Debug.Log(x + "," + y + "を反転:反転後(" + type + ")");
+     }
+    public void setTyoe(KOMA_TYPE koma_type)
+    {
+        anim.settype(koma_type);
     }
     // Update is called once per frame
     void Update()

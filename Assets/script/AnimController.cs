@@ -35,4 +35,17 @@ public class AnimController : MonoBehaviour
             }
         }
     }
+    public void settype(KOMA_TYPE koma_type)
+    {
+        if (koma_type == KOMA_TYPE.Black)
+        {
+            Debug.Log("setBlack");
+            GetComponent<Animator>().Play("setBlack", 0);
+        }
+        else
+        {
+            Debug.Log("setWhite");
+            GetComponent<Animator>().Play("setWhite", 0);
+        }
+    }
 }
