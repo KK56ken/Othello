@@ -236,6 +236,7 @@ public class System_manager : MonobitEngine.MonoBehaviour
 
         Debug.Log("x =" + x + " y =" + y);
     }
+    [MunRPC]
     void RecvCoordinate(int sender_x, int sender_y, int n)
     {
         KOMA_TYPE sender_koma_type;
