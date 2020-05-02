@@ -96,20 +96,47 @@ public class System_manager : MonobitEngine.MonoBehaviour
     }
     public void please_input()
     {
+        dummy_array_reset();
         if (!end_check())
         {
             if (now_turn == turn)
             {
                 b.can_set(now_turn);
-                Debug.Log("<COLOR=YELLOW>プレイヤー入力待ち</COLOR>");
+                if (!b.pass_check())
+                {
+                    Debug.Log("<COLOR=YELLOW>プレイヤー入力待ち</COLOR>");
+                }
             }
             else
             {
-                //cpuの配置
-                b.can_set(now_turn);
-                Debug.Log("<COLOR=YELLOW>CPU入力待ち</COLOR>");
+                Invoke("call_cpu",1.0f);
             }
         }
+    }
+
+    public void dummy_array_reset()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                b.dummy_array[i, j].SetActive(false);
+            }
+        }
+    }
+    public void call_cpu()
+    {
+        b.can_set(now_turn);
+        if (!b.pass_check())
+        {
+            b.cpu_check_dummy_array();
+            //cpuの配置
+            Debug.Log("<COLOR=YELLOW>CPU入力待ち</COLOR>");
+        }
+    }
+    public void cpu(int x,int y,KOMA_TYPE type)
+    {        
+        b.SetKoma(x, y, type);
     }
     public void please_input_multi()
     {

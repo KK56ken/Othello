@@ -6,7 +6,7 @@ public class board : MonoBehaviour
 {
 
     GameObject[,] komaArray = new GameObject[8, 8];
-    GameObject[,] dummy_array = new GameObject[8, 8];
+    public GameObject[,] dummy_array = new GameObject[8, 8];
     private float thisX;
     private float thisZ;
     private float space_obj;
@@ -65,7 +65,7 @@ public class board : MonoBehaviour
                     komaArray[i, j].GetComponent<komaScript>().type = KOMA_TYPE.White;
                     komaArray[i, j].GetComponent<komaScript>().x = i;
                     komaArray[i, j].GetComponent<komaScript>().y = j;
-                    komaArray[i, j].GetComponent<komaScript>().setTyoe(get_koma_type(i,j));
+                    komaArray[i, j].GetComponent<komaScript>().setTyoe(get_koma_type(i, j));
                 }
                 else
                 {
@@ -131,7 +131,6 @@ public class board : MonoBehaviour
     {
         return this.space_obj;
     }
-
     // Update is called once per frame
     void Update()
     {
@@ -163,7 +162,7 @@ public class board : MonoBehaviour
         else
         {
             Debug.LogError("TURNの値が不正です");
-        } 
+        }
 
 
         Debug.Log("<COLOR=RED>" + now_type + "</COLOR><COLOR=YELLOW>の打てる場所探索</COLOR>");
@@ -234,8 +233,48 @@ public class board : MonoBehaviour
         {
             type = KOMA_TYPE.White;
         }
-
         return type;
+    }
+    //CPUが置けるか判定
+    public void cpu_check_dummy_array()
+    {
+        System_manager system = GameObject.Find("system").GetComponent<System_manager>();
+        int cnt = 0;
+        
+        for (int i = 0;i < 8;i++)
+        {
+            for (int j = 0;j < 8; j++)
+            {
+                //初めにおける場所におく
+                if(dummy_array[i,j].activeSelf == true && cnt == 0 )
+                {
+                    dummy_array[i, j].GetComponent<DummyScript>().setKoma();
+                    cnt++;
+                }
+            }
+        }
+    }
+    public bool pass_check()
+    {
+        System_manager system = GameObject.Find("system").GetComponent<System_manager>();
+        int cnt = 0;
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                Debug.Log(dummy_array[i, j].activeSelf);
+                //初めにおける場所におく
+                if (dummy_array[i, j].activeSelf == true)
+                {
+                    cnt++;
+                }
+            }
+        }
+        if (cnt < 1)
+        {
+            return true;
+        }
+        return false;
     }
     public bool can_not_revers()
     {
