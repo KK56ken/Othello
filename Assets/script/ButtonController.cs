@@ -18,14 +18,27 @@ public class ButtonController : MonoBehaviour
     }
     public void onClickOffButton()
     {
-        Invoke("ChangeScene", 1.0f);
+        SceneManager.LoadScene("SampleScene");
     }
     public void onClickEndButton()
     {
         UnityEngine.Application.Quit();
     }
-    void ChangeScene()
+    public void onClickOnButton()
     {
         SceneManager.LoadScene("SampleScene");
+
+    }
+    public void onClickRoomCreateButton()
+    {
+
+    }
+    public void onClickRoomUpdateButton()
+    {
+
+    }
+    public void onClickRoom(string roomName)
+    {
+
     }
 }

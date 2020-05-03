@@ -7,6 +7,7 @@ public enum PLAY_MODE { single, multi }
 public enum TURN { play_first, draw_first }
 public class System_manager : MonobitEngine.MonoBehaviour
 {
+    public static TURN receiveTurn;
     private PLAY_MODE ptype;
     //最初に選んだターン
     private TURN turn;
