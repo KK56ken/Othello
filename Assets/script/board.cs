@@ -235,47 +235,6 @@ public class board : MonoBehaviour
         }
         return type;
     }
-    //CPUが置けるか判定
-    public void cpu_check_dummy_array()
-    {
-        System_manager system = GameObject.Find("system").GetComponent<System_manager>();
-        int cnt = 0;
-        
-        for (int i = 0;i < 8;i++)
-        {
-            for (int j = 0;j < 8; j++)
-            {
-                //初めにおける場所におく
-                if(dummy_array[i,j].activeSelf == true && cnt == 0 )
-                {
-                    dummy_array[i, j].GetComponent<DummyScript>().setKoma();
-                    cnt++;
-                }
-            }
-        }
-    }
-    public bool pass_check()
-    {
-        System_manager system = GameObject.Find("system").GetComponent<System_manager>();
-        int cnt = 0;
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                Debug.Log(dummy_array[i, j].activeSelf);
-                //初めにおける場所におく
-                if (dummy_array[i, j].activeSelf == true)
-                {
-                    cnt++;
-                }
-            }
-        }
-        if (cnt < 1)
-        {
-            return true;
-        }
-        return false;
-    }
     public bool can_not_revers()
     {
         System_manager system = GameObject.Find("system").GetComponent<System_manager>();
