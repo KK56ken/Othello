@@ -18,7 +18,6 @@ public class ButtonController : MonoBehaviour
     }
     public void onClickOffButton()
     {
-        System_manager.receiveMode = PLAY_MODE.single;
         SceneManager.LoadScene("SampleScene");
     }
     public void onClickEndButton()
@@ -27,11 +26,6 @@ public class ButtonController : MonoBehaviour
     }
     public void onClickOnButton()
     {
-        GameObject ui_mode = GameObject.Find("ui_mode_select");
-        GameObject ui_room = GameObject.Find("ui_room");
-        ui_mode.SetActive(false);
-        ui_room.SetActive(true);
-        System_manager.receiveMode = PLAY_MODE.multi;
         SceneManager.LoadScene("SampleScene");
 
     }
