@@ -7,8 +7,11 @@ public enum PLAY_MODE { single, multi }
 public enum TURN { play_first, draw_first }
 public class System_manager : MonobitEngine.MonoBehaviour
 {
+
     public static TURN receiveTurn;
     private PLAY_MODE ptype;
+    public static TURN receiveTurn;
+    public static PLAY_MODE receiveMode;
     //最初に選んだターン
     private TURN turn;
     //現在のターン
@@ -25,16 +28,6 @@ public class System_manager : MonobitEngine.MonoBehaviour
     private int n;
     private bool o = false;
 
-    //選んだモードを割り当てる
-    public void set_play_mode(PLAY_MODE ptype)
-    {
-        this.ptype = ptype;
-    }
-    //選んだモードを取得する
-    public PLAY_MODE get_play_mode()
-    {
-        return this.ptype;
-    }
     // Start is called before the first frame update
     void Start()
     {
