@@ -28,22 +28,16 @@ public class ButtonController : MonoBehaviour
     }
     public void onClickOffButton()
     {
-<<<<<<< Updated upstream
-        Invoke("ChangeScene", 1.0f);
-=======
+
         System_manager.play_mode = PLAY_MODE.single;
         SceneManager.LoadScene("SampleScene");
->>>>>>> Stashed changes
     }
     public void onClickEndButton()
     {
         UnityEngine.Application.Quit();
     }
-    void ChangeScene()
+    public void onClickOnButton()
     {
-<<<<<<< Updated upstream
-        SceneManager.LoadScene("SampleScene");
-=======
         ui_mode_select.SetActive(false);
         ui_room.SetActive(true);
         MonoScript.ConnectServer();
@@ -97,7 +91,18 @@ public class ButtonController : MonoBehaviour
         System_manager.receiveTurn = monobit.getTurn();
         System_manager.play_mode = PLAY_MODE.multi;
         monobit.ready();
-        SceneManager.LoadScene("SampleScene");
+    }
+    public void onClickRoomCreateButton()
+    {
+
+    }
+    public void onClickRoomUpdateButton()
+    {
+
+    }
+    public void onClickRoom(string roomName)
+    {
+
     }
     public void onClickTurnSelect()
     {
@@ -114,7 +119,6 @@ public class ButtonController : MonoBehaviour
         MonoScript.CreateRoom(roomName);
         ui_mode_select.SetActive(false);
         ui_room.SetActive(false);
->>>>>>> Stashed changes
     }
 
 }

@@ -6,7 +6,7 @@ public class board : MonoBehaviour
 {
 
     GameObject[,] komaArray = new GameObject[8, 8];
-    GameObject[,] dummy_array = new GameObject[8, 8];
+    public GameObject[,] dummy_array = new GameObject[8, 8];
     private float thisX;
     private float thisZ;
     private float space_obj;
@@ -65,7 +65,7 @@ public class board : MonoBehaviour
                     komaArray[i, j].GetComponent<komaScript>().type = KOMA_TYPE.White;
                     komaArray[i, j].GetComponent<komaScript>().x = i;
                     komaArray[i, j].GetComponent<komaScript>().y = j;
-                    komaArray[i, j].GetComponent<komaScript>().setTyoe(get_koma_type(i,j));
+                    komaArray[i, j].GetComponent<komaScript>().setTyoe(get_koma_type(i, j));
                 }
                 else
                 {
@@ -131,7 +131,6 @@ public class board : MonoBehaviour
     {
         return this.space_obj;
     }
-
     // Update is called once per frame
     void Update()
     {
@@ -163,7 +162,7 @@ public class board : MonoBehaviour
         else
         {
             Debug.LogError("TURNの値が不正です");
-        } 
+        }
 
 
         Debug.Log("<COLOR=RED>" + now_type + "</COLOR><COLOR=YELLOW>の打てる場所探索</COLOR>");
@@ -234,77 +233,7 @@ public class board : MonoBehaviour
         {
             type = KOMA_TYPE.White;
         }
-
         return type;
-    }
-    public bool can_not_revers()
-    {
-        System_manager system = GameObject.Find("system").GetComponent<System_manager>();
-
-        int cnt = 1;
-        bool[] not_revers = new bool[2];
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                if (!(i == 3 && j == 4) && !(i == 4 && j == 3) && !(i == 3 && j == 3) && !(i == 4 && j == 4))
-                {
-                    for (int k = -1; k < 2; k++)
-                    {
-                        for (int l = -1; l < 2; l++)
-                        {
-                            cnt = 1;
-                            if (get_koma_type((i + k), (j + l)) == KOMA_TYPE.White)
-                            {
-                                while (cnt != 8)
-                                {
-                                    if (get_koma_type(i + (k * cnt), j + (l * cnt)) == KOMA_TYPE.Black)
-                                    {
-                                        break;
-                                    }
-                                    cnt += 1;
-                                }
-                                if (cnt == 8)
-                                {
-                                    continue;
-                                }
-                                else
-                                {
-                                    not_revers[0] = true;
-                                }
-                            }
-                            cnt = 1;
-                            if (get_koma_type(i + k, j + l) == KOMA_TYPE.Black)
-                            {
-                                while (cnt != 8)
-                                {
-                                    if (get_koma_type(i + (k * cnt), j + (l * cnt)) == KOMA_TYPE.White)
-                                    {
-                                        break;
-                                    }
-                                    cnt += 1;
-                                }
-                                if (cnt == 8)
-                                {
-                                    continue;
-                                }
-                                else
-                                {
-                                    not_revers[1] = true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        if (not_revers[0] && not_revers[1])
-        {
-
-            return true;
-
-        }
-        return false;
     }
     public void SetKoma(int x, int y, KOMA_TYPE type)
     {
@@ -394,8 +323,6 @@ public class board : MonoBehaviour
             }
         }
     }
-
-
     public KOMA_TYPE get_koma_type(int x, int y)
     {
         if (x < 0 || y < 0 || x >= 8 || y >= 8)
@@ -409,6 +336,37 @@ public class board : MonoBehaviour
         else
         {
             return komaArray[x, y].GetComponent<komaScript>().type;
+        }
+    }
+    public int get_koma_kazu(string color)
+    {
+        int blackcnt = 0;
+        int whitecnt = 0;
+        for(int i = 0;i < 8; i++)
+        {
+            for(int j = 0;j < 8; j++)
+            {
+                if(komaArray[i,j].GetComponent<komaScript>().type == KOMA_TYPE.Black)
+                {
+                    blackcnt += 1;
+                }
+                else
+                {
+                    whitecnt += 1;
+                }
+            }
+        }
+        if (color == "Black")
+        {
+            return blackcnt;
+        }
+        else if (color == "White")
+        {
+            return whitecnt;
+        }
+        else{
+            Debug.LogError("get_koma_kazuでおかしくなってるよ");
+            return -1;
         }
     }
 }

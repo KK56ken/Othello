@@ -7,13 +7,18 @@ public enum PLAY_MODE { single, multi }
 public enum TURN { play_first, draw_first }
 public class System_manager : MonobitEngine.MonoBehaviour
 {
-    private PLAY_MODE ptype;
+
+    public static TURN receiveTurn;
+    public static PLAY_MODE play_mode = PLAY_MODE.single;
+
     //最初に選んだターン
     private TURN turn;
     //現在のターン
     private TURN now_turn = TURN.play_first;
 
     public board b;
+
+    public result_text r;
 
     public GameObject ui_turn;
 
@@ -23,6 +28,9 @@ public class System_manager : MonobitEngine.MonoBehaviour
     private int sx, sy;
     private int n;
     private bool o = false;
+    public bool endflag = false;
+
+    [SerializeField] GameObject ui_result;
 
     //選んだモードを割り当てる
     public void set_play_mode(PLAY_MODE ptype)
@@ -37,6 +45,12 @@ public class System_manager : MonobitEngine.MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        ui_result.SetActive(false);
+        if (play_mode == PLAY_MODE.single)
+        {
+            GameObject ui_start = GameObject.Find("ui_start");
+            ui_start.SetActive(true);
+        }
     }
     //オセロのシステム起動
     public void Game_start(PLAY_MODE mode)
@@ -89,42 +103,130 @@ public class System_manager : MonobitEngine.MonoBehaviour
         else if (now_turn == TURN.play_first)
             now_turn = TURN.draw_first;
         else Debug.LogError("now_turn:値は不正です");
-        
+
         Debug.Log("<COLOR=YELLOW>ターン変わったよ" + this.turn + "</COLOR>");
 
         please_input();
     }
     public void please_input()
     {
-        if (!end_check())
+
+        dummy_array_reset();
+        if (now_turn == turn)
         {
-            if (now_turn == turn)
+            Debug.Log("<COLOR=YELLOW>プレイヤー入力待ち</COLOR>");
+            b.can_set(now_turn);
+            if (pass_check())
             {
-                b.can_set(now_turn);
-                Debug.Log("<COLOR=YELLOW>プレイヤー入力待ち</COLOR>");
+                if (endflag == true)
+                {
+                    r.change_text("player");
+                    //終了
+                    ui_result.SetActive(true);
+                    //Debug.Log("終了処理できてるよ");
+                }
+                else
+                {
+                    endflag = true;
+                    turn_change();
+                }
             }
             else
             {
-                //cpuの配置
-                b.can_set(now_turn);
-                Debug.Log("<COLOR=YELLOW>CPU入力待ち</COLOR>");
+                endflag = false;
+            }
+        }
+        else
+        {
+            Invoke("call_cpu", 1.0f);
+        }
+    }
+
+    public void dummy_array_reset()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                b.dummy_array[i, j].SetActive(false);
             }
         }
     }
-    public void please_input_multi()
+    public void call_cpu()
     {
-        if (!end_check())
+        //cpuの配置
+        Debug.Log("<COLOR=YELLOW>CPU入力待ち</COLOR>");
+        b.can_set(now_turn);
+        if (!pass_check())
         {
-            if (now_turn == turn)
+            endflag = false;
+            cpu_set_check();
+        }
+        else
+        {
+            if (endflag == true)
             {
-                b.can_set(now_turn);
-                Debug.Log("<COLOR=YELLOW>プレイヤー1入力待ち</COLOR>");
+                r.change_text("cpu");
+                //終了処理
+                ui_result.SetActive(true);
+                //Debug.Log("終了処理できてるよ");
+
             }
             else
             {
-                //プレイヤー2の処理
-                Debug.Log("<COLOR=YELLOW>プレイヤー2入力待ち</COLOR>");
+                endflag = true;
+                turn_change();
             }
+        }
+    }
+    //CPUが置く処理
+    public void cpu_set_check()
+    {
+        Random.InitState(System.DateTime.Now.Millisecond);
+        int cnt = 0;
+        List<List<int>> list = new List<List<int>>();
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (b.dummy_array[i, j].activeSelf == true)
+                {
+                    list.Add(new List<int>(new int[] { i,j }));
+                    cnt += 1;
+                }
+            }
+        }
+        int random = Random.Range(0, cnt);
+        b.dummy_array[list[random][0], list[random][1]].GetComponent<DummyScript>().setKoma();
+
+    }
+    public bool pass_check()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                //Debug.Log(dummy_array[i, j].activeSelf);
+                //置けるか置けないかを判断する
+                if (b.dummy_array[i, j].activeSelf == true)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    public void please_input_multi()
+    {
+        if (now_turn == turn)
+        {
+            b.can_set(now_turn);
+            Debug.Log("<COLOR=YELLOW>プレイヤー1入力待ち</COLOR>");
+        }
+        else
+        {
+            //プレイヤー2の処理
+            Debug.Log("<COLOR=YELLOW>プレイヤー2入力待ち</COLOR>");
         }
     }
     public void multi_play()
@@ -249,30 +351,6 @@ public class System_manager : MonobitEngine.MonoBehaviour
             sender_koma_type = KOMA_TYPE.White;
         }
         b.SetKoma(sender_x, sender_y, sender_koma_type);
-    }
-    //終了;true
-    public bool end_check()
-    {
-        bool end_flag = true;
-        //すべてのマスに駒が置いてないか判定
-        for (int i = 0; i < 8; i++)
-        {
-            for (int j = 0; j < 8; j++)
-            {
-                if (KOMA_TYPE.None == b.get_koma_type(i, j))
-                {
-                    end_flag = false;
-                    break;
-                }
-            }
-        }
-        //どちらの駒もおけないか判定
-        if (!b.can_not_revers())
-        {
-            Debug.Log("<COLOR=RED>両者パス</COLOR>");
-            end_flag = true;
-        }
-        return end_flag;
     }
     // Update is called once per frame
     void Update()
