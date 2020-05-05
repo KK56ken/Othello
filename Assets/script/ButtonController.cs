@@ -18,18 +18,14 @@ public class ButtonController : MonoBehaviour
     }
     public void onClickOffButton()
     {
-<<<<<<< Updated upstream
-        Invoke("ChangeScene", 1.0f);
-=======
         System_manager.receiveMode = PLAY_MODE.single;
         SceneManager.LoadScene("SampleScene");
->>>>>>> Stashed changes
     }
     public void onClickEndButton()
     {
         UnityEngine.Application.Quit();
     }
-    void ChangeScene()
+    public void onClickOnButton()
     {
         GameObject ui_mode = GameObject.Find("ui_mode_select");
         GameObject ui_room = GameObject.Find("ui_room");
@@ -37,5 +33,18 @@ public class ButtonController : MonoBehaviour
         ui_room.SetActive(true);
         System_manager.receiveMode = PLAY_MODE.multi;
         SceneManager.LoadScene("SampleScene");
+
+    }
+    public void onClickRoomCreateButton()
+    {
+
+    }
+    public void onClickRoomUpdateButton()
+    {
+
+    }
+    public void onClickRoom(string roomName)
+    {
+
     }
 }

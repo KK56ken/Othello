@@ -6,7 +6,7 @@ public class board : MonoBehaviour
 {
 
     GameObject[,] komaArray = new GameObject[8, 8];
-    GameObject[,] dummy_array = new GameObject[8, 8];
+    public GameObject[,] dummy_array = new GameObject[8, 8];
     private float thisX;
     private float thisZ;
     private float space_obj;
@@ -65,7 +65,7 @@ public class board : MonoBehaviour
                     komaArray[i, j].GetComponent<komaScript>().type = KOMA_TYPE.White;
                     komaArray[i, j].GetComponent<komaScript>().x = i;
                     komaArray[i, j].GetComponent<komaScript>().y = j;
-                    komaArray[i, j].GetComponent<komaScript>().setTyoe(get_koma_type(i,j));
+                    komaArray[i, j].GetComponent<komaScript>().setTyoe(get_koma_type(i, j));
                 }
                 else
                 {
@@ -131,7 +131,6 @@ public class board : MonoBehaviour
     {
         return this.space_obj;
     }
-
     // Update is called once per frame
     void Update()
     {
@@ -163,7 +162,7 @@ public class board : MonoBehaviour
         else
         {
             Debug.LogError("TURNの値が不正です");
-        } 
+        }
 
 
         Debug.Log("<COLOR=RED>" + now_type + "</COLOR><COLOR=YELLOW>の打てる場所探索</COLOR>");
@@ -234,7 +233,6 @@ public class board : MonoBehaviour
         {
             type = KOMA_TYPE.White;
         }
-
         return type;
     }
     public bool can_not_revers()

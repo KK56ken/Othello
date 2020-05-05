@@ -7,12 +7,11 @@ public enum PLAY_MODE { single, multi }
 public enum TURN { play_first, draw_first }
 public class System_manager : MonobitEngine.MonoBehaviour
 {
-<<<<<<< Updated upstream
+
+    public static TURN receiveTurn;
     private PLAY_MODE ptype;
-=======
     public static TURN receiveTurn;
     public static PLAY_MODE receiveMode;
->>>>>>> Stashed changes
     //最初に選んだターン
     private TURN turn;
     //現在のターン
@@ -91,20 +90,91 @@ public class System_manager : MonobitEngine.MonoBehaviour
     }
     public void please_input()
     {
+        dummy_array_reset();
         if (!end_check())
         {
             if (now_turn == turn)
             {
-                b.can_set(now_turn);
                 Debug.Log("<COLOR=YELLOW>プレイヤー入力待ち</COLOR>");
+                b.can_set(now_turn);
+                if (pass_check())
+                {
+                    turn_change();
+                }
             }
             else
             {
-                //cpuの配置
-                b.can_set(now_turn);
-                Debug.Log("<COLOR=YELLOW>CPU入力待ち</COLOR>");
+                Invoke("call_cpu",1.0f);
             }
         }
+    }
+
+    public void dummy_array_reset()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                b.dummy_array[i, j].SetActive(false);
+            }
+        }
+    }
+    public void call_cpu()
+    {
+        //cpuの配置
+        Debug.Log("<COLOR=YELLOW>CPU入力待ち</COLOR>");
+        b.can_set(now_turn);
+        if (!pass_check())
+        {
+            cpu_set_check();
+        }
+        else
+        {
+            turn_change();
+        }
+    }
+    //CPUが置けるか判定
+    public void cpu_set_check()
+    {
+        Random.InitState(System.DateTime.Now.Millisecond);
+        int cnt = 0;
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                int random = Random.Range(0, 100);
+                //初めにおける場所におく
+                if (b.dummy_array[i, j].activeSelf == true && cnt == 0)
+                {
+                    if (10 > random)
+                    {
+                        b.dummy_array[i, j].GetComponent<DummyScript>().setKoma();
+                        cnt++;
+                    }
+                }
+            }
+        }
+        //Debug.Log("random成功");
+        if (cnt == 0)
+        {
+            cpu_set_check();
+        }
+    }
+    public bool pass_check()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                //Debug.Log(dummy_array[i, j].activeSelf);
+                //置けるか置けないかを判断する
+                if (b.dummy_array[i, j].activeSelf == true)
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
     public void please_input_multi()
     {
