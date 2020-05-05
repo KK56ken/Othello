@@ -10,7 +10,7 @@ public class System_manager : MonobitEngine.MonoBehaviour
     public static TURN receiveTurn;
     public static PLAY_MODE play_mode = PLAY_MODE.single;
     //最初に選んだターン
-    private TURN turn;
+    private TURN turn = TURN.play_first;
     //現在のターン
     private TURN now_turn = TURN.play_first;
 
@@ -18,7 +18,7 @@ public class System_manager : MonobitEngine.MonoBehaviour
 
     public result_text r;
 
-    public GameObject ui_turn;
+    public turn_text t;
 
     /** ルーム名. */
     private string roomName = "";
@@ -29,6 +29,8 @@ public class System_manager : MonobitEngine.MonoBehaviour
     public bool endflag = false;
 
     [SerializeField] GameObject ui_result;
+
+    [SerializeField] GameObject ui_turn;
 
     // Start is called before the first frame update
     void Start()
@@ -98,52 +100,48 @@ public class System_manager : MonobitEngine.MonoBehaviour
     }
     public void please_input()
     {
-
+        ui_turn.SetActive(true);
         dummy_array_reset();
         if (now_turn == turn)
         {
-            Debug.Log("<COLOR=YELLOW>プレイヤー入力待ち</COLOR>");
-            b.can_set(now_turn);
-            if (pass_check())
-            {
-                if (endflag == true)
-                {
-                    r.change_text("player");
-                    //終了
-                    ui_result.SetActive(true);
-                    //Debug.Log("終了処理できてるよ");
-                }
-                else
-                {
-                    endflag = true;
-                    turn_change();
-                }
-            }
-            else
-            {
-                endflag = false;
-            }
+            Invoke("call_single_player", 1.0f);
         }
         else
         {
             Invoke("call_cpu", 1.0f);
         }
     }
-
-    public void dummy_array_reset()
+    public void call_single_player()
     {
-        for (int i = 0; i < 8; i++)
+        Debug.Log("<COLOR=YELLOW>プレイヤー入力待ち</COLOR>");
+        t.turn_text_change(this.turn,this.now_turn);
+        b.can_set(now_turn);
+        if (pass_check())
         {
-            for (int j = 0; j < 8; j++)
+            if (endflag == true)
             {
-                b.dummy_array[i, j].SetActive(false);
+                ui_turn.SetActive(false);
+                r.result_text_change("player");
+                //終了
+                ui_result.SetActive(true);
+                //Debug.Log("終了処理できてるよ");
             }
+            else
+            {
+                endflag = true;
+                turn_change();
+            }
+        }
+        else
+        {
+            endflag = false;
         }
     }
     public void call_cpu()
     {
         //cpuの配置
         Debug.Log("<COLOR=YELLOW>CPU入力待ち</COLOR>");
+        t.turn_text_change(this.turn, this.now_turn);
         b.can_set(now_turn);
         if (!pass_check())
         {
@@ -154,7 +152,8 @@ public class System_manager : MonobitEngine.MonoBehaviour
         {
             if (endflag == true)
             {
-                r.change_text("cpu");
+                ui_turn.SetActive(false);
+                r.result_text_change("cpu");
                 //終了処理
                 ui_result.SetActive(true);
                 //Debug.Log("終了処理できてるよ");
@@ -164,6 +163,16 @@ public class System_manager : MonobitEngine.MonoBehaviour
             {
                 endflag = true;
                 turn_change();
+            }
+        }
+    }
+    public void dummy_array_reset()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                b.dummy_array[i, j].SetActive(false);
             }
         }
     }
