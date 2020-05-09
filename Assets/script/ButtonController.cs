@@ -92,18 +92,6 @@ public class ButtonController : MonoBehaviour
         System_manager.play_mode = PLAY_MODE.multi;
         monobit.ready();
     }
-    public void onClickRoomCreateButton()
-    {
-
-    }
-    public void onClickRoomUpdateButton()
-    {
-
-    }
-    public void onClickRoom(string roomName)
-    {
-
-    }
     public void onClickTurnSelect()
     {
         string selectedLabel = toggleGroup.ActiveToggles()
