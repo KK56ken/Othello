@@ -22,10 +22,16 @@ public class turnSelect : MonoBehaviour
         string selectedLabel = toggleGroup.ActiveToggles()
             .First().name;
 
-        if(selectedLabel == "toggle_first")
+        if (selectedLabel == "toggle_first")
+        {
             system_manager.set_turn(TURN.play_first);
-        else if(selectedLabel == "toggle_second")
+            system_manager.set_now_turn(TURN.play_first);
+        }
+        else if (selectedLabel == "toggle_second")
+        {
             system_manager.set_turn(TURN.draw_first);
+            system_manager.set_now_turn(TURN.play_first);
+        }
 
         //とりあえずシングルモード
         system_manager.Game_start(PLAY_MODE.single);
