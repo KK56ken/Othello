@@ -12,7 +12,7 @@ public class result_text : MonoBehaviour
     {
         
     }
-    public void change_text(string player_name)
+    public void result_text_change(string player_name)
     {
         int black_kazu = b.get_koma_kazu("Black");
         int white_kazu = b.get_koma_kazu("White");
