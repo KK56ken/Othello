@@ -14,6 +14,8 @@ public class ButtonController : MonoBehaviour
     [SerializeField] GameObject ui_turn_select;
     [SerializeField] MonoScript monobit;
     [SerializeField] ToggleGroup toggleGroup;
+    //アクセスの試行回数を記録
+    int acccess_count = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -41,7 +43,7 @@ public class ButtonController : MonoBehaviour
         ui_mode_select.SetActive(false);
         ui_room.SetActive(true);
         MonoScript.ConnectServer();
-        Invoke("roomUpdate", 0.5F);
+        Invoke("roomUpdate", 1.0F);
     }
     public void onClickRoomCreateButton()
     {
@@ -95,16 +97,22 @@ public class ButtonController : MonoBehaviour
         if (MonoScript.isConnect())
         {
             ui_room.SetActive(false);
-            monobit.getTurn();
-            Invoke("gamestart", 3.0F);
+            monobit.guestReady();
         }
-    }
-    private void gamestart()
-    {
-        System_manager.receiveTurn = MonoScript.turn;
-        System_manager.play_mode = PLAY_MODE.multi;
-        monobit.ready();
-        SceneManager.LoadScene("SampleScene");
+        else
+        {
+            //5回まで再試行する
+            if (acccess_count <= 5)
+            {
+                Invoke("checkJoin", 1.0F);
+            }
+            else
+            {
+                acccess_count = 0;
+                ui_room.SetActive(true);
+            }
+
+        }
     }
     public void onClickTurnSelect()
     {
