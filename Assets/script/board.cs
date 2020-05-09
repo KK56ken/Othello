@@ -346,13 +346,21 @@ public class board : MonoBehaviour
         {
             for(int j = 0;j < 8; j++)
             {
-                if(komaArray[i,j].GetComponent<komaScript>().type == KOMA_TYPE.Black)
+                if (komaArray[i,j] == null)
+                {
+
+                }
+                else if(komaArray[i,j].GetComponent<komaScript>().type == KOMA_TYPE.Black)
                 {
                     blackcnt += 1;
                 }
-                else
+                else if(komaArray[i,j].GetComponent<komaScript>().type == KOMA_TYPE.White)
                 {
                     whitecnt += 1;
+                }
+                else
+                {
+                    Debug.LogError("get_koma_kazu関数で数の計算がおかしいよ");
                 }
             }
         }
