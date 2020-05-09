@@ -38,6 +38,7 @@ public class System_manager : MonobitEngine.MonoBehaviour
     void Start()
     {
         ui_result.SetActive(false);
+        ui_turn.SetActive(false);
         if (play_mode == PLAY_MODE.single)
         {
             GameObject ui_start = GameObject.Find("ui_start");

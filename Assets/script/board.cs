@@ -5,7 +5,7 @@ using UnityEngine;
 public class board : MonoBehaviour
 {
 
-    GameObject[,] komaArray = new GameObject[8, 8];
+    public GameObject[,] komaArray = new GameObject[8, 8];
     public GameObject[,] dummy_array = new GameObject[8, 8];
     private float thisX;
     private float thisZ;
