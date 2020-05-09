@@ -41,7 +41,7 @@ public class ButtonController : MonoBehaviour
         ui_mode_select.SetActive(false);
         ui_room.SetActive(true);
         MonoScript.ConnectServer();
-        roomUpdate();
+        Invoke("roomUpdate", 0.5F);
     }
     public void onClickRoomCreateButton()
     {
@@ -88,9 +88,23 @@ public class ButtonController : MonoBehaviour
     public void onClickRoom(string roomName)
     {
         MonoScript.JoinRoom(roomName);
-        System_manager.receiveTurn = monobit.getTurn();
+        Invoke("checkJoin", 1.0F);
+    }
+    private void checkJoin()
+    {
+        if (MonoScript.isConnect())
+        {
+            ui_room.SetActive(false);
+            monobit.getTurn();
+            Invoke("gamestart", 3.0F);
+        }
+    }
+    private void gamestart()
+    {
+        System_manager.receiveTurn = MonoScript.turn;
         System_manager.play_mode = PLAY_MODE.multi;
         monobit.ready();
+        SceneManager.LoadScene("SampleScene");
     }
     public void onClickTurnSelect()
     {
@@ -105,7 +119,7 @@ public class ButtonController : MonoBehaviour
         //inputFieldからテキストを取得
         string roomName = ui_room_name.GetComponent<Text>().text;
         MonoScript.CreateRoom(roomName);
-        ui_mode_select.SetActive(false);
+        ui_turn_select.SetActive(false);
         ui_room.SetActive(false);
     }
 

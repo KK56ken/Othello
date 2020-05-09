@@ -21,7 +21,7 @@ public class MonoScript : MonobitEngine.MonoBehaviour
     {
         MonobitNetwork.playerName = "host";
         MonobitNetwork.CreateRoom(roomName);
-        Debug.Log("ルーム【"+roomName + "】を作成");
+        Debug.Log("ルーム【" + roomName + "】を作成");
     }
     public static string[] getRoomNames()
     {
@@ -44,9 +44,14 @@ public class MonoScript : MonobitEngine.MonoBehaviour
     }
     public static void JoinRoom(string roomName)
     {
-        MonobitNetwork.playerName = "client";
-        MonobitNetwork.JoinRoom(roomName);
-        Debug.Log("ルーム【"+roomName + "】に入室しました");
+        MonobitNetwork.playerName = "guest";
+        if (MonobitNetwork.JoinRoom(roomName)){
+            Debug.Log("ルーム【" + roomName + "】に入室しました");
+        }
+        else
+        {
+            Debug.LogError("ルーム【" + roomName + "】に入室できませんでした");
+        }
     }
     public static void ConnectServer()
     {
@@ -54,15 +59,28 @@ public class MonoScript : MonobitEngine.MonoBehaviour
         MonobitNetwork.ConnectServer("othello");
         Debug.Log("サーバーにアクセスしました");
     }
-    public TURN getTurn()
+    public void getTurn()
     {
-        monobitView.RPC("getHostTurn",MonobitTargets.All);
-        Debug.Log(MonoScript.turn);
-        return MonoScript.turn;
+        //相手にこちらのターンを直接変えるよう、命令を送る
+        monobitView.RPC("getHostTurn", MonobitTargets.Others);
     }
     public void ready()
     {
-        monobitView.RPC("gameStart", MonobitTargets.All);
+        //相手のゲームを開始する
+        monobitView.RPC("gameStart", MonobitTargets.Others);
+    }
+    public static bool isConnect()
+    {
+        if (MonobitNetwork.isConnect)
+        {
+            if (MonobitNetwork.inRoom)
+                return true;
+            else
+                Debug.LogError("ルームに入室していません");
+        }
+        else
+            Debug.LogError("サーバーに接続していません");
+        return false;
     }
     [MunRPC]
     public void gameStart()
@@ -74,21 +92,22 @@ public class MonoScript : MonobitEngine.MonoBehaviour
     [MunRPC]
     public void getHostTurn()
     {
+        Debug.Log("getHostTurnが呼び出されました");
         if (MonoScript.turn == TURN.draw_first)
-            monobitView.RPC("setTurn", MonobitTargets.All, TURN.play_first);
+            monobitView.RPC("setTurn", MonobitTargets.Others, 0);
         else if (MonoScript.turn == TURN.play_first)
-            monobitView.RPC("setTurn", MonobitTargets.All, TURN.draw_first);
+            monobitView.RPC("setTurn", MonobitTargets.Others, 1);
         else
-            monobitView.RPC("putError", MonobitTargets.All, "MonoScript.turnに正しい値が入っていません");
+            monobitView.RPC("putError", MonobitTargets.Others, "MonoScript.turnに正しい値が入っていません");
     }
     [MunRPC]
-    public void setTurn(TURN turn)
+    public void setTurn(int turn_num)
     {
-        MonoScript.turn = turn;
+        if (turn_num == 0)
+            MonoScript.turn = TURN.play_first;
+        else
+            MonoScript.turn = TURN.draw_first;
+        Debug.Log("setTurnが呼ばれました" + turn);
     }
-    [MunRPC]
-    public void putError(string str)
-    {
-        Debug.LogError(str);
-    }
+
 }
