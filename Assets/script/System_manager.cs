@@ -9,7 +9,7 @@ public class System_manager : MonobitEngine.MonoBehaviour
 {
 
     public static TURN receiveTurn;
-    public static PLAY_MODE play_mode = PLAY_MODE.single;
+    public static PLAY_MODE play_mode;
 
     //最初に選んだターン
     private TURN turn;
@@ -34,16 +34,19 @@ public class System_manager : MonobitEngine.MonoBehaviour
 
     [SerializeField] GameObject ui_turn;
 
+    [SerializeField] GameObject ui_start;
+
     // Start is called before the first frame update
     void Start()
     {
         ui_result.SetActive(false);
         ui_turn.SetActive(false);
-        if (play_mode == PLAY_MODE.single)
-        {
-            GameObject ui_start = GameObject.Find("ui_start");
-            ui_start.SetActive(true);
+        ui_start.SetActive(true);
+        if (play_mode == PLAY_MODE.multi) {
+            ui_start.SetActive(false);
+            Game_start(play_mode);
         }
+
     }
     //オセロのシステム起動
     public void Game_start(PLAY_MODE mode)
@@ -57,7 +60,7 @@ public class System_manager : MonobitEngine.MonoBehaviour
         else if (mode == PLAY_MODE.multi)
         {
             //マルチプレイの処理
-            multi_play();
+            multi_play_start();
         }
         else
         {
@@ -88,6 +91,14 @@ public class System_manager : MonobitEngine.MonoBehaviour
         //ループ終了処理（両者打つところがなくなる or全部の面を埋まったら)
         please_input();
     }
+    //マルチプレイの初回の処理
+    public void multi_play_start()
+    {
+        b.board_start();
+
+        //ループ終了処理（両者打つところがなくなる or全部の面を埋まったら)
+        please_input_multi();
+    }
     //ターンを切り替えるときの処理
     public void turn_change()
     {
@@ -98,8 +109,10 @@ public class System_manager : MonobitEngine.MonoBehaviour
         else Debug.LogError("now_turn:値は不正です");
 
         Debug.Log("<COLOR=YELLOW>ターン変わったよ" + this.turn + "</COLOR>");
-
-        please_input();
+        if (play_mode == PLAY_MODE.single)
+            please_input();
+        else if (play_mode == PLAY_MODE.multi)
+            please_input_multi();
     }
     public void please_input()
     {
@@ -112,6 +125,69 @@ public class System_manager : MonobitEngine.MonoBehaviour
         else
         {
             Invoke("call_cpu", 1.0f);
+        }
+    }
+    public void please_input_multi()
+    {
+        ui_turn.SetActive(true);
+        dummy_array_reset();
+        if (now_turn == receiveTurn)
+        {
+            t.turn_text_change(receiveTurn, this.now_turn);
+            b.can_set(now_turn);
+            if (pass_check())
+            {
+                if (endflag == true)
+                {
+                    ui_turn.SetActive(false);
+                    if(TURN.play_first == receiveTurn)
+                        r.result_text_change("play_first");
+                    else if (TURN.draw_first == receiveTurn)
+                        r.result_text_change("draw_first");
+                    //終了
+                    ui_result.SetActive(true);
+                    //Debug.Log("終了処理できてるよ");
+                }
+                else
+                {
+                    endflag = true;
+                    turn_change();
+                    Debug.Log("ターンチェンジできてるよ");
+                }
+            }
+            else
+            {
+                endflag = false;
+            }
+        }
+        else
+        {
+            t.turn_text_change(receiveTurn, this.now_turn);
+            b.can_set(now_turn);
+            if (pass_check())
+            {
+                if (endflag == true)
+                {
+                    ui_turn.SetActive(false);
+                    if (TURN.play_first == receiveTurn)
+                        r.result_text_change("play_first");
+                    else if (TURN.draw_first == receiveTurn)
+                        r.result_text_change("draw_first");
+                    //終了
+                    ui_result.SetActive(true);
+                    //Debug.Log("終了処理できてるよ");
+                }
+                else
+                {
+                    endflag = true;
+                    turn_change();
+                    Debug.Log("ターンチェンジできてるよ");
+                }
+            }
+            else
+            {
+                endflag = false;
+            }
         }
     }
 
@@ -217,116 +293,6 @@ public class System_manager : MonobitEngine.MonoBehaviour
         }
         return true;
     }
-    public void please_input_multi()
-    {
-        if (now_turn == turn)
-        {
-            b.can_set(now_turn);
-            Debug.Log("<COLOR=YELLOW>プレイヤー1入力待ち</COLOR>");
-        }
-        else
-        {
-            //プレイヤー2の処理
-            Debug.Log("<COLOR=YELLOW>プレイヤー2入力待ち</COLOR>");
-        }
-    }
-    public void multi_play()
-    {
-        b.board_start();
-        //ループ終了処理（両者打つところがなくなる or全部の面を埋まったら)
-        please_input_multi();
-    }
-    void OnGUI()
-    {
-        Debug.Log("GUI起動");
-        // MUNサーバに接続している場合
-        if (MonobitNetwork.isConnect)
-        {
-            // ルームに入室している場合
-            if (MonobitNetwork.inRoom)
-            {
-                // ルーム内のプレイヤー一覧の表示
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("PlayerList : ");
-                foreach (MonobitPlayer player in MonobitNetwork.playerList)
-                {
-                    GUILayout.Label(player.name + " ");
-                }
-                GUILayout.EndHorizontal();
-                if (o)
-                {
-                    // 座標を送信する
-                    monobitView.RPC("RecvCoordinate",
-                        MonobitTargets.Others,
-                        //座標
-                        this.sx,
-                        this.sy,
-                        this.n
-                        );
-                    o = false;
-                }
-                // ルームからの退室
-                if (GUILayout.Button("Leave Room", GUILayout.Width(150)))
-                {
-                    MonobitNetwork.LeaveRoom();
-                }
-            }
-            // ルームに入室していない場合
-            else
-            {
-                // ルーム名の入力
-                GUILayout.BeginHorizontal();
-                GUILayout.Label("RoomName : ");
-                roomName = GUILayout.TextField(roomName, GUILayout.Width(200));
-                GUILayout.EndHorizontal();
-
-                // ルームを作成して入室する
-                if (GUILayout.Button("Create Room", GUILayout.Width(150)))
-                {
-                    MonobitNetwork.CreateRoom(roomName);
-                }
-                // ルーム一覧を検索
-                foreach (RoomData room in MonobitNetwork.GetRoomData())
-                {
-                    // ルームパラメータの可視化
-                    System.String roomParam =
-                        System.String.Format(
-                            "{0}({1}/{2})",
-                            room.name,
-                            room.playerCount,
-                            ((room.maxPlayers == 0) ? "-" : room.maxPlayers.ToString())
-                        );
-
-                    // ルームを選択して入室する
-                    if (GUILayout.Button("Enter Room : " + roomParam))
-                    {
-                        MonobitNetwork.JoinRoom(room.name);
-                    }
-                }
-            }
-        }
-        // MUNサーバに接続していない場合
-        else
-        {
-            // プレイヤー名の入力
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("PlayerName : ");
-            MonobitNetwork.playerName = GUILayout.TextField(
-                (MonobitNetwork.playerName == null) ?
-                    "" :
-                    MonobitNetwork.playerName, GUILayout.Width(200));
-            GUILayout.EndHorizontal();
-
-            // デフォルトロビーへの自動入室を許可する
-            MonobitNetwork.autoJoinLobby = true;
-
-            // MUNサーバに接続する
-            if (GUILayout.Button("Connect Server", GUILayout.Width(150)))
-            {
-                MonobitNetwork.ConnectServer("SimpleChat_v1.0");
-            }
-        }
-    }
     public void fsend()
     {
         this.o = true;
@@ -336,6 +302,15 @@ public class System_manager : MonobitEngine.MonoBehaviour
         this.sx = x;
         this.sy = y;
         this.n = n;
+
+        // 座標を送信する
+        monobitView.RPC("RecvCoordinate",
+            MonobitTargets.Others,
+            //座標
+            this.sx,
+            this.sy,
+            this.n
+            );
 
         Debug.Log("x =" + x + " y =" + y);
     }
