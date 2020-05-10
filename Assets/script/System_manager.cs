@@ -133,64 +133,67 @@ public class System_manager : MonobitEngine.MonoBehaviour
         dummy_array_reset();
         if (now_turn == receiveTurn)
         {
-            t.turn_text_change(receiveTurn, this.now_turn);
-            b.can_set(now_turn);
-            if (pass_check())
+            Invoke("call_host", 1.0f);
+        }
+        else
+        {
+            Invoke("call_gest", 1.0f);
+        }
+
+    }
+    public void call_host()
+    {
+        Debug.Log("<COLOR=YELLOW>プレイヤー入力待ち</COLOR>");
+        t.turn_text_change(this.turn, this.now_turn);
+        b.can_set(now_turn);
+        if (pass_check())
+        {
+            if (endflag == true)
             {
-                if (endflag == true)
-                {
-                    ui_turn.SetActive(false);
-                    if(TURN.play_first == receiveTurn)
-                        r.result_text_change("play_first");
-                    else if (TURN.draw_first == receiveTurn)
-                        r.result_text_change("draw_first");
-                    //終了
-                    ui_result.SetActive(true);
-                    //Debug.Log("終了処理できてるよ");
-                }
-                else
-                {
-                    endflag = true;
-                    turn_change();
-                    Debug.Log("ターンチェンジできてるよ");
-                }
+                ui_turn.SetActive(false);
+                r.result_text_change("player");
+                //終了
+                ui_result.SetActive(true);
+                //Debug.Log("終了処理できてるよ");
             }
             else
             {
-                endflag = false;
+                endflag = true;
+                turn_change();
             }
         }
         else
         {
-            t.turn_text_change(receiveTurn, this.now_turn);
+            endflag = false;
+        }
+    }
+    public void call_gest()
+    {
+        Debug.Log("<COLOR=YELLOW>CPU入力待ち</COLOR>");
+        t.turn_text_change(this.turn, this.now_turn);
+        if (!pass_check())
+        {
+            endflag = false;
             b.can_set(now_turn);
-            if (pass_check())
+        }
+        else
+        {
+            if (endflag == true)
             {
-                if (endflag == true)
-                {
-                    ui_turn.SetActive(false);
-                    if (TURN.play_first == receiveTurn)
-                        r.result_text_change("play_first");
-                    else if (TURN.draw_first == receiveTurn)
-                        r.result_text_change("draw_first");
-                    //終了
-                    ui_result.SetActive(true);
-                    //Debug.Log("終了処理できてるよ");
-                }
-                else
-                {
-                    endflag = true;
-                    turn_change();
-                    Debug.Log("ターンチェンジできてるよ");
-                }
+                ui_turn.SetActive(false);
+                r.result_text_change("cpu");
+                //終了処理
+                ui_result.SetActive(true);
+                //Debug.Log("終了処理できてるよ");
+
             }
             else
             {
-                endflag = false;
+                endflag = true;
+                turn_change();
             }
         }
     }
-
     public void call_single_player()
     {
         Debug.Log("<COLOR=YELLOW>プレイヤー入力待ち</COLOR>");
