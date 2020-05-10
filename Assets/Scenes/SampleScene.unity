@@ -2483,6 +2483,7 @@ MonoBehaviour:
   endflag: 0
   ui_result: {fileID: 517102618}
   ui_turn: {fileID: 84578046}
+  ui_start: {fileID: 49716319}
 --- !u!114 &1557963913
 MonoBehaviour:
   m_ObjectHideFlags: 0
