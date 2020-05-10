@@ -45,7 +45,8 @@ public class MonoScript : MonobitEngine.MonoBehaviour
     public static void JoinRoom(string roomName)
     {
         MonobitNetwork.playerName = "guest";
-        if (MonobitNetwork.JoinRoom(roomName)){
+        if (MonobitNetwork.JoinRoom(roomName))
+        {
             Debug.Log("ルーム【" + roomName + "】に入室しました");
         }
         else
@@ -58,16 +59,6 @@ public class MonoScript : MonobitEngine.MonoBehaviour
         MonobitNetwork.autoJoinLobby = true;
         MonobitNetwork.ConnectServer("othello");
         Debug.Log("サーバーにアクセスしました");
-    }
-    public void getTurn()
-    {
-        //相手にこちらのターンを直接変えるよう、命令を送る
-        monobitView.RPC("getHostTurn", MonobitTargets.Others);
-    }
-    public void ready()
-    {
-        //相手のゲームを開始する
-        monobitView.RPC("gameStart", MonobitTargets.Others);
     }
     public static bool isConnect()
     {
@@ -82,7 +73,11 @@ public class MonoScript : MonobitEngine.MonoBehaviour
             Debug.LogError("サーバーに接続していません");
         return false;
     }
-    [MunRPC]
+    public void guestReady()
+    {
+        //相手のゲームを開始する
+        monobitView.RPC("hostGameStart", MonobitTargets.Others);
+    }
     public void gameStart()
     {
         System_manager.play_mode = PLAY_MODE.multi;
@@ -90,24 +85,23 @@ public class MonoScript : MonobitEngine.MonoBehaviour
         SceneManager.LoadScene("SampleScene");
     }
     [MunRPC]
-    public void getHostTurn()
+    public void hostGameStart()
     {
-        Debug.Log("getHostTurnが呼び出されました");
+        Debug.Log("hostGameStartが呼び出されました");
         if (MonoScript.turn == TURN.draw_first)
-            monobitView.RPC("setTurn", MonobitTargets.Others, 0);
+            monobitView.RPC("guestGameStart", MonobitTargets.Others, 0);
         else if (MonoScript.turn == TURN.play_first)
-            monobitView.RPC("setTurn", MonobitTargets.Others, 1);
-        else
-            monobitView.RPC("putError", MonobitTargets.Others, "MonoScript.turnに正しい値が入っていません");
+            monobitView.RPC("guestGameStart", MonobitTargets.Others, 1);
+        gameStart();
     }
     [MunRPC]
-    public void setTurn(int turn_num)
+    public void guestGameStart(int turn_num)
     {
         if (turn_num == 0)
             MonoScript.turn = TURN.play_first;
         else
             MonoScript.turn = TURN.draw_first;
-        Debug.Log("setTurnが呼ばれました" + turn);
+        Debug.Log("guestGameStartが呼ばれました" + turn);
+        gameStart();
     }
-
 }
