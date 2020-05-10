@@ -12,6 +12,7 @@ public class ButtonController : MonoBehaviour
     [SerializeField] GameObject ui_room_name;
     [SerializeField] GameObject ui_room_list;
     [SerializeField] GameObject ui_turn_select;
+    [SerializeField] GameObject ui_wait;
     [SerializeField] MonoScript monobit;
     [SerializeField] ToggleGroup toggleGroup;
     //アクセスの試行回数を記録
@@ -114,6 +115,11 @@ public class ButtonController : MonoBehaviour
 
         }
     }
+    public void onClickBackToModeSelect()
+    {
+        ui_room.SetActive(false);
+        ui_mode_select.SetActive(true);
+    }
     public void onClickTurnSelect()
     {
         string selectedLabel = toggleGroup.ActiveToggles()
@@ -129,6 +135,12 @@ public class ButtonController : MonoBehaviour
         MonoScript.CreateRoom(roomName);
         ui_turn_select.SetActive(false);
         ui_room.SetActive(false);
+        ui_wait.SetActive(true);
     }
-
+    public void onClickWaitCancel()
+    {
+        MonoScript.LeaveRoom();
+        ui_wait.SetActive(false);
+        ui_room.SetActive(true);
+    }
 }
