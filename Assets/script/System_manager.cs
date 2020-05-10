@@ -133,15 +133,15 @@ public class System_manager : MonobitEngine.MonoBehaviour
         dummy_array_reset();
         if (now_turn == receiveTurn)
         {
-            Invoke("call_host", 1.0f);
+            Invoke("call_first", 1.0f);
         }
         else
         {
-            Invoke("call_gest", 1.0f);
+            Invoke("call_second", 1.0f);
         }
 
     }
-    public void call_host()
+    public void call_first()
     {
         Debug.Log("<COLOR=YELLOW>プレイヤー入力待ち</COLOR>");
         t.turn_text_change(this.turn, this.now_turn);
@@ -167,32 +167,10 @@ public class System_manager : MonobitEngine.MonoBehaviour
             endflag = false;
         }
     }
-    public void call_gest()
+    public void call_second()
     {
-        Debug.Log("<COLOR=YELLOW>CPU入力待ち</COLOR>");
+        Debug.Log("<COLOR=YELLOW>後攻入力待ち</COLOR>");
         t.turn_text_change(this.turn, this.now_turn);
-        if (!pass_check())
-        {
-            endflag = false;
-            b.can_set(now_turn);
-        }
-        else
-        {
-            if (endflag == true)
-            {
-                ui_turn.SetActive(false);
-                r.result_text_change("cpu");
-                //終了処理
-                ui_result.SetActive(true);
-                //Debug.Log("終了処理できてるよ");
-
-            }
-            else
-            {
-                endflag = true;
-                turn_change();
-            }
-        }
     }
     public void call_single_player()
     {
@@ -330,6 +308,7 @@ public class System_manager : MonobitEngine.MonoBehaviour
             sender_koma_type = KOMA_TYPE.White;
         }
         b.SetKoma(sender_x, sender_y, sender_koma_type);
+        turn_change();
     }
     // Update is called once per frame
     void Update()
