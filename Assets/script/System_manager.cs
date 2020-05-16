@@ -36,19 +36,24 @@ public class System_manager : MonobitEngine.MonoBehaviour
     public bool endflag = false;
     
     [SerializeField] GameObject ui_result;
+    [SerializeField] GameObject ui_continue_button;
 
     [SerializeField] GameObject ui_turn;
 
     [SerializeField] GameObject ui_start;
 
+    [SerializeField] GameObject ui_wait;
+
     // Start is called before the first frame update
     void Start()
     {
-        ui_result.SetActive(false);
-        ui_turn.SetActive(false);
-        ui_start.SetActive(true);
-        if (play_mode == PLAY_MODE.multi && !MonobitNetwork.isHost) 
-            ui_start.SetActive(false);
+        if (play_mode == PLAY_MODE.multi)
+        {
+            if (MonobitNetwork.isHost)
+                ui_start.SetActive(true);
+            else
+                ui_wait.SetActive(true);
+        }
     }
     //オセロのシステム起動
     public void Game_start(PLAY_MODE mode)
