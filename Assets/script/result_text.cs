@@ -33,6 +33,37 @@ public class result_text : MonoBehaviour
             Debug.Log("change_textがおかしくない");
         }
     }
+    public void change_result_text_multi()
+    {
+        int black_kazu = b.get_koma_kazu("Black");
+        int white_kazu = b.get_koma_kazu("White");
+        this.targetText = this.GetComponent<Text>();
+        if (System_manager.receiveTurn == TURN.play_first && black_kazu > white_kazu)
+        {
+            this.targetText.text = "あなた(黒)の勝ちです\n\n先手(黒):" + black_kazu + "\n" + "後手(白):" + white_kazu;
+        }
+        else if (System_manager.receiveTurn == TURN.play_first && black_kazu < white_kazu)
+        {
+            this.targetText.text = "あいて(白)の勝ちです\n\n先手(黒):" + black_kazu + "\n" + "後手(白):" + white_kazu;
+        }
+        else if (System_manager.receiveTurn == TURN.draw_first && black_kazu > white_kazu)
+        {
+            this.targetText.text = "あいて(黒)の勝ちです\n\n先手(黒):" + black_kazu + "\n" + "後手(白):" + white_kazu;
+        }
+        else if (System_manager.receiveTurn == TURN.draw_first && black_kazu < white_kazu)
+        {
+            this.targetText.text = "あなた(白)の勝ちです\n\n先手(黒):" + black_kazu + "\n" + "後手(白):" + white_kazu;
+        }
+        else if (black_kazu == white_kazu)
+        {
+            this.targetText.text = "引き分けです\n\n先手(黒):" + black_kazu + "\n" + "後手(白):" + white_kazu;
+        }
+        else
+        {
+            Debug.Log("change_textがおかしくない");
+        }
+
+    }
 
     // Update is called once per frame
     void Update()

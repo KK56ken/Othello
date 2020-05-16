@@ -26,15 +26,19 @@ public class turnSelect : MonoBehaviour
         {
             system_manager.set_turn(TURN.play_first);
             system_manager.set_now_turn(TURN.play_first);
+            system_manager.send_turn(1);
         }
         else if (selectedLabel == "toggle_second")
         {
             system_manager.set_turn(TURN.draw_first);
             system_manager.set_now_turn(TURN.play_first);
+            system_manager.send_turn(0);
         }
-
-        //とりあえずシングルモード
-        system_manager.Game_start(PLAY_MODE.single);
+        //シングルモード
+        if (System_manager.play_mode == PLAY_MODE.single) 
+            system_manager.Game_start(PLAY_MODE.single);
+        else if (System_manager.play_mode == PLAY_MODE.multi)
+            system_manager.Game_start(PLAY_MODE.multi);
         this.transform.root.gameObject.SetActive(false);
         Debug.Log(selectedLabel + "を選択しました。");
     }

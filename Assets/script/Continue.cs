@@ -14,7 +14,10 @@ public class Continue : MonobitEngine.MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        if (!MonobitNetwork.isHost)
+        {
+            Destroy(gameObject.transform.FindChild("btn_rematch").gameObject);
+        }
     }
     // Update is called once per frame
     void Update()
@@ -29,7 +32,8 @@ public class Continue : MonobitEngine.MonoBehaviour
             {
                 for (int j = 0; j < 8; j++)
                 {
-                    Destroy(b.komaArray[i, j].gameObject);
+                    if (b.komaArray[i, j] != null)
+                        Destroy(b.komaArray[i, j].gameObject);
                 }
             }
             ui_result.SetActive(false);
@@ -37,11 +41,16 @@ public class Continue : MonobitEngine.MonoBehaviour
         } 
         else if (System_manager.play_mode == PLAY_MODE.multi)
         {
-            if (!MonobitNetwork.isHost)
+            for (int i = 0; i < 8; i++)
             {
-                Destroy(gameObject.transform.FindChild("btn_rematch").gameObject);
+                for (int j = 0; j < 8; j++)
+                {
+                    if (b.komaArray[i, j] != null) 
+                        Destroy(b.komaArray[i, j].gameObject);
+                }
             }
             ui_result.SetActive(false);
+            ui_start.SetActive(true);
         }
     }
 }
