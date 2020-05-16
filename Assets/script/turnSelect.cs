@@ -26,13 +26,15 @@ public class turnSelect : MonoBehaviour
         {
             system_manager.set_turn(TURN.play_first);
             system_manager.set_now_turn(TURN.play_first);
-            system_manager.send_turn(1);
+            Debug.Log("先手を選択しました。");
+            system_manager.send_turn(2);
         }
         else if (selectedLabel == "toggle_second")
         {
             system_manager.set_turn(TURN.draw_first);
             system_manager.set_now_turn(TURN.play_first);
-            system_manager.send_turn(0);
+            Debug.Log("後手を選択しました。");
+            system_manager.send_turn(1);
         }
         //シングルモード
         if (System_manager.play_mode == PLAY_MODE.single) 
@@ -40,6 +42,5 @@ public class turnSelect : MonoBehaviour
         else if (System_manager.play_mode == PLAY_MODE.multi)
             system_manager.Game_start(PLAY_MODE.multi);
         this.transform.root.gameObject.SetActive(false);
-        Debug.Log(selectedLabel + "を選択しました。");
     }
 }

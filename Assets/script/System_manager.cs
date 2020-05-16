@@ -34,8 +34,9 @@ public class System_manager : MonobitEngine.MonoBehaviour
     private bool end = false;
 
     public bool endflag = false;
-    
+
     [SerializeField] GameObject ui_result;
+
     [SerializeField] GameObject ui_continue_button;
 
     [SerializeField] GameObject ui_turn;
@@ -47,16 +48,7 @@ public class System_manager : MonobitEngine.MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        if (play_mode == PLAY_MODE.multi)
-        {
-            if (MonobitNetwork.isHost)
-                ui_start.SetActive(true);
-            else
-            {
-                ui_wait.SetActive(true);
-                Destroy(ui_continue_button);
-            }
-        }
+        reset_game();
     }
     //オセロのシステム起動
     public void Game_start(PLAY_MODE mode)
@@ -81,6 +73,7 @@ public class System_manager : MonobitEngine.MonoBehaviour
     public void set_turn(TURN turn)
     {
         this.turn = turn;
+        System_manager.receiveTurn = turn;
     }
     public TURN get_turn()
     {
@@ -198,7 +191,7 @@ public class System_manager : MonobitEngine.MonoBehaviour
                 r.result_text_change("player1");
                 //終了
                 ui_result.SetActive(true);
-                
+
                 //Debug.Log("終了処理できてるよ");
             }
             else
@@ -262,7 +255,7 @@ public class System_manager : MonobitEngine.MonoBehaviour
             {
                 if (b.dummy_array[i, j].activeSelf == true)
                 {
-                    list.Add(new List<int>(new int[] { i,j }));
+                    list.Add(new List<int>(new int[] { i, j }));
                     cnt += 1;
                 }
             }
@@ -324,28 +317,30 @@ public class System_manager : MonobitEngine.MonoBehaviour
         b.SetKoma(sender_x, sender_y, sender_koma_type);
         turn_change();
     }
-    public void send_turn(int turn)
+    public void send_turn(int turn_num)
     {
+        Debug.Log("<COLOR=RED>送信ターン番号" + turn_num + "</COLOR>");
         //this.now_turn = now_turn;
         //this.turn = turn;
         // ターンを送信する
         monobitView.RPC("Other_GameStart_Multi",
             MonobitTargets.Others,
-            turn
+            turn_num
             );
     }
     [MunRPC]
     void Other_GameStart_Multi(int turn)
     {
-        if (0 == turn)
+        if (turn == 1)
         {
             System_manager.receiveTurn = TURN.play_first;
         }
-        else if (1 == turn)
+        else if (turn == 2)
         {
             System_manager.receiveTurn = TURN.draw_first;
-            //Debug.Log("後攻選択したよ"+this.turn);
         }
+        Debug.Log("<COLOR=RED>"+ receiveTurn +"</COLOR>");
+        Debug.Log("<COLOR=RED>"+ play_mode + "</COLOR>");
         Game_start(play_mode);
     }
     public void send_endflag(bool endflag)
@@ -374,6 +369,40 @@ public class System_manager : MonobitEngine.MonoBehaviour
         r.change_result_text_multi();
         //終了
         ui_result.SetActive(true);
+    }
+    [MunRPC]
+    public void reset_game()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                if (b.komaArray[i, j] != null)
+                    Destroy(b.komaArray[i, j].gameObject);
+            }
+        }
+        now_turn = TURN.play_first;
+        if (play_mode == PLAY_MODE.multi)
+        {
+            if (MonobitNetwork.isHost)
+                ui_start.SetActive(true);
+            else
+            {
+                ui_wait.SetActive(true);
+                Destroy(ui_continue_button);
+            }
+        }
+        ui_result.SetActive(false);
+    }
+    public void onClickContinue()
+    {
+        reset_game();
+        if (play_mode == PLAY_MODE.multi)
+        {
+            monobitView.RPC("reset_game",
+                MonobitTargets.Others
+            );
+        }
     }
     // Update is called once per frame
     void Update()
