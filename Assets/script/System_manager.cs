@@ -52,13 +52,17 @@ public class System_manager : MonobitEngine.MonoBehaviour
             if (MonobitNetwork.isHost)
                 ui_start.SetActive(true);
             else
+            {
                 ui_wait.SetActive(true);
+                Destroy(ui_continue_button);
+            }
         }
     }
     //オセロのシステム起動
     public void Game_start(PLAY_MODE mode)
     {
         ui_turn.SetActive(true);
+        ui_wait.SetActive(false);
         if (mode == PLAY_MODE.single)
         {
             //シングルプレイの処理
