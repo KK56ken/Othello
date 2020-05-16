@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using MonobitEngine;
 
-public class Continue : MonoBehaviour
+public class Continue : MonobitEngine.MonoBehaviour
 {
     [SerializeField] GameObject ui_start;
     [SerializeField] GameObject ui_result;
 
     public board b;
+    public MonoScript mono;
 
     // Start is called before the first frame update
     void Start()
@@ -21,14 +23,25 @@ public class Continue : MonoBehaviour
     }
     public void onClickContinue()
     {
-        for(int i = 0; i < 8; i++)
+        if (System_manager.play_mode == PLAY_MODE.single)
         {
-            for(int j = 0; j < 8; j++)
+            for (int i = 0; i < 8; i++)
             {
-                Destroy(b.komaArray[i,j].gameObject);
+                for (int j = 0; j < 8; j++)
+                {
+                    Destroy(b.komaArray[i, j].gameObject);
+                }
             }
+            ui_result.SetActive(false);
+            ui_start.SetActive(true);
+        } 
+        else if (System_manager.play_mode == PLAY_MODE.multi)
+        {
+            if (!MonobitNetwork.isHost)
+            {
+                Destroy(gameObject.transform.FindChild("btn_rematch").gameObject);
+            }
+            ui_result.SetActive(false);
         }
-        ui_result.SetActive(false);
-        ui_start.SetActive(true);
     }
 }

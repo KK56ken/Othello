@@ -154,6 +154,7 @@ public class System_manager : MonobitEngine.MonoBehaviour
                 r.result_text_change("player");
                 //終了
                 ui_result.SetActive(true);
+
                 //Debug.Log("終了処理できてるよ");
             }
             else
