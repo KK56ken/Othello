@@ -392,6 +392,10 @@ public class System_manager : MonobitEngine.MonoBehaviour
                 Destroy(ui_continue_button);
             }
         }
+        else
+        {
+            ui_start.SetActive(true);
+        }
         ui_result.SetActive(false);
     }
     public void onClickContinue()
