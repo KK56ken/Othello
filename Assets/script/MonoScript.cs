@@ -89,19 +89,15 @@ public class MonoScript : MonobitEngine.MonoBehaviour
     {
         Debug.Log("hostGameStartが呼び出されました");
         if (MonoScript.turn == TURN.draw_first)
-            monobitView.RPC("guestGameStart", MonobitTargets.Others, 0);
+            monobitView.RPC("guestGameStart", MonobitTargets.Others);
         else if (MonoScript.turn == TURN.play_first)
-            monobitView.RPC("guestGameStart", MonobitTargets.Others, 1);
+            monobitView.RPC("guestGameStart", MonobitTargets.Others);
         gameStart();
     }
     [MunRPC]
-    public void guestGameStart(int turn_num)
+    public void guestGameStart()
     {
-        if (turn_num == 0)
-            MonoScript.turn = TURN.play_first;
-        else
-            MonoScript.turn = TURN.draw_first;
-        Debug.Log("guestGameStartが呼ばれました" + turn);
+        Debug.Log("guestGameStartが呼ばれました");
         gameStart();
     }
 }

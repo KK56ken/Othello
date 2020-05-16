@@ -48,8 +48,11 @@ public class ButtonController : MonoBehaviour
     }
     public void onClickRoomCreateButton()
     {
-        //ターン選択画面を表示
-        ui_turn_select.SetActive(true);
+        //inputFieldからテキストを取得
+        string roomName = ui_room_name.GetComponent<Text>().text;
+        MonoScript.CreateRoom(roomName);
+        ui_room.SetActive(false);
+        ui_wait.SetActive(true);
     }
     public void onClickRoomUpdateButton()
     {
@@ -119,23 +122,6 @@ public class ButtonController : MonoBehaviour
     {
         ui_room.SetActive(false);
         ui_mode_select.SetActive(true);
-    }
-    public void onClickTurnSelect()
-    {
-        string selectedLabel = toggleGroup.ActiveToggles()
-            .First().name;
-
-        if (selectedLabel == "toggle_first")
-            MonoScript.turn = TURN.play_first;
-        else if (selectedLabel == "toggle_second")
-            MonoScript.turn = TURN.draw_first;
-
-        //inputFieldからテキストを取得
-        string roomName = ui_room_name.GetComponent<Text>().text;
-        MonoScript.CreateRoom(roomName);
-        ui_turn_select.SetActive(false);
-        ui_room.SetActive(false);
-        ui_wait.SetActive(true);
     }
     public void onClickWaitCancel()
     {
